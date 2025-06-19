@@ -58,19 +58,21 @@
         alert("Bitte einen Einsatznamen eingeben.");
         return;
       }
-      const url = `einsatz.html?einsatz=${encodeURIComponent(einsatzName)}`;
-      currentUrl = url;
-      document.getElementById("einsatzLink").textContent = url;
-      document.getElementById("einsatzLink").href = url;
+      const origin = window.location.origin + window.location.pathname.replace("index.html", "");
+      const fullUrl = `${origin}einsatz.html?einsatz=${encodeURIComponent(einsatzName)}`;
+      currentUrl = fullUrl;
+
+      document.getElementById("einsatzLink").textContent = fullUrl;
+      document.getElementById("einsatzLink").href = fullUrl;
       document.getElementById("qrcode").innerHTML = "";
 
       const qrContainer = document.getElementById("qrcode");
-      const qrCanvas = document.createElement("canvas");
-      new QRCode(qrCanvas, url);
+      const qrCanvas = document.createElement("div");
+      new QRCode(qrCanvas, fullUrl);
       qrContainer.appendChild(qrCanvas);
 
       document.getElementById("output").style.display = "block";
-      window.open(url, '_blank');
+      window.open(fullUrl, '_blank');
     }
 
     function copyLink() {
@@ -81,10 +83,14 @@
 
     function downloadQR() {
       const canvas = document.querySelector("#qrcode canvas");
-      const link = document.createElement("a");
-      link.download = "einsatz-qr.png";
-      link.href = canvas.toDataURL();
-      link.click();
+      if (canvas) {
+        const link = document.createElement("a");
+        link.download = "einsatz-qr.png";
+        link.href = canvas.toDataURL();
+        link.click();
+      } else {
+        alert("QR-Code nicht gefunden.");
+      }
     }
   </script>
 </body>
