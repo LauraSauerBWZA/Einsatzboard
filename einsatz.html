@@ -83,16 +83,20 @@
       `;
       container.appendChild(wrapper);
 
-      // neue Felder speichern sich selbst bei Eingabe
       wrapper.querySelector(".koordInput").addEventListener("input", saveData);
       wrapper.querySelector(".infoInput").addEventListener("input", saveData);
-
-      saveData();
     }
 
     document.addEventListener("input", (e) => {
       if (["funkkanaele", "hinweise"].includes(e.target.id)) {
         saveData();
+      }
+    });
+
+    document.getElementById("neuerFunkruf").addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        addFunkruf();
       }
     });
 
@@ -135,7 +139,7 @@
     <div class="section">
       <label>Ansprechpartner / Funkrufnamen</label>
       <div id="funkrufContainer"></div>
-      <input type="text" id="neuerFunkruf" placeholder="z. B. EL BW" onkeypress="if(event.key==='Enter'){event.preventDefault();addFunkruf()}" />
+      <input type="text" id="neuerFunkruf" placeholder="z. B. EL BW" />
       <button onclick="addFunkruf()">Hinzufügen</button>
     </div>
 
@@ -143,8 +147,8 @@
       <label>Koordinaten & Standortinfos</label>
       <div id="standortContainer"></div>
       <div class="location-entry">
-        <input type="text" placeholder="Koordinate (z. B. 48.2 8.7)" class="koordInput" />
-        <input type="text" placeholder="Standortbeschreibung (z. B. oberhalb Jägerpfad)" class="infoInput" />
+        <input type="text" placeholder="Koordinate (z. B. 48.2 8.7)" class="koordInput" oninput="saveData()" />
+        <input type="text" placeholder="Standortbeschreibung (z. B. oberhalb Jägerpfad)" class="infoInput" oninput="saveData()" />
         <button class="small-button" onclick="addStandortField()">+</button>
       </div>
     </div>
