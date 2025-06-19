@@ -7,22 +7,55 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; background-color: #f0f4f8; margin: 0; padding: 0; text-align: center; }
-    header { background-color: #003366; color: white; padding: 1rem; }
-    .logo { height: 40px; vertical-align: middle; margin-right: 10px; }
-    main { padding: 2rem; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f4f8;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    header {
+      background-color: #003366;
+      color: white;
+      padding: 1rem;
+    }
+    .logo {
+      height: 40px;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+    main {
+      padding: 2rem;
+    }
     input, button {
-      padding: 0.8rem; font-size: 1rem; margin: 0.5rem auto; width: 80%; max-width: 500px;
+      padding: 0.8rem;
+      font-size: 1rem;
+      margin: 0.5rem auto;
+      width: 80%;
+      max-width: 500px;
     }
     input {
-      background-color: #ffffff; border: 2px solid #cccccc; border-radius: 4px;
+      background-color: #ffffff;
+      border: 2px solid #cccccc;
+      border-radius: 4px;
     }
     button {
-      background-color: #003366; color: white; border: none; cursor: pointer; border-radius: 4px;
+      background-color: #003366;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
     }
-    button:hover { opacity: 0.9; }
+    button:hover {
+      opacity: 0.9;
+    }
     .field-container {
-      margin: 1rem auto; max-width: 600px; background: #ffffff; border: 2px solid #e0e0e0; padding: 1rem; border-radius: 4px;
+      margin: 1rem auto;
+      max-width: 600px;
+      background: #ffffff;
+      border: 2px solid #e0e0e0;
+      padding: 1rem;
+      border-radius: 4px;
     }
     .existing-data {
       background-color: #e6f7ff;
@@ -30,6 +63,10 @@
       padding: 1rem;
       border-radius: 4px;
       border: 1px solid #b3d8ff;
+    }
+    .entry {
+      padding: 0.5rem;
+      border-bottom: 1px solid #ddd;
     }
   </style>
 </head>
@@ -86,7 +123,7 @@
     }
 
     function saveData(type) {
-      let refPath = `einsaetze/${einsatz}/${type}`;
+      const refPath = `einsaetze/${einsatz}/${type}`;
       let value;
 
       if (type === 'koordinaten') {
@@ -102,10 +139,11 @@
 
       db.ref(refPath).push(value).then(() => {
         renderData();
-        if (type !== 'koordinaten') document.getElementById(type).value = "";
-        else {
+        if (type === 'koordinaten') {
           document.getElementById("koord").value = "";
           document.getElementById("koordInfo").value = "";
+        } else {
+          document.getElementById(type).value = "";
         }
       });
     }
@@ -113,8 +151,8 @@
     function renderData() {
       const sections = [
         { key: 'ansprechpartner', containerId: 'ansprechpartnerDisplay' },
-        { key: 'funkkanaele', containerId: 'funkkanalDisplay' },
-        { key: 'hinweise', containerId: 'hinweisDisplay' },
+        { key: 'funkkanal', containerId: 'funkkanalDisplay' },
+        { key: 'hinweis', containerId: 'hinweisDisplay' },
         { key: 'koordinaten', containerId: 'koordDisplay', isCoord: true }
       ];
 
@@ -125,6 +163,7 @@
           container.innerHTML = "";
           for (let k in list) {
             const div = document.createElement("div");
+            div.classList.add("entry");
             if (isCoord) {
               const coord = list[k];
               div.innerHTML = `<strong>${coord.ort}</strong>: ${coord.info}`;
