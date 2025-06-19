@@ -1,96 +1,55 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bergwacht Einsatz erstellen</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Einsatz starten – Bergwacht</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f9f9f9;
-      margin: 0;
-      padding: 0;
+    body { font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 2rem; }
+    header { background-color: #003366; color: white; padding: 1rem; text-align: center; }
+    .logo { height: 40px; vertical-align: middle; margin-right: 10px; }
+    main { max-width: 600px; margin: auto; }
+    label { display: block; margin-top: 1rem; font-weight: bold; }
+    input, button {
+      width: 100%; padding: 0.8rem; margin-top: 0.5rem; font-size: 1rem;
     }
-    header {
-      background-color: #003366;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-    }
-    .logo {
-      height: 40px;
-      vertical-align: middle;
-      margin-right: 10px;
-    }
-    main {
-      padding: 2rem;
-      text-align: center;
-    }
-    label {
-      display: block;
-      margin: 1rem 0 0.5rem;
-      font-weight: bold;
-    }
-    input {
-      padding: 0.5rem;
-      font-size: 1rem;
-      width: 80%;
-      max-width: 400px;
-    }
-    button {
-      margin-top: 1.5rem;
-      padding: 0.8rem 1.5rem;
-      font-size: 1rem;
-      background-color: #003366;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      opacity: 0.9;
-    }
-    #qr-container {
-      margin-top: 2rem;
-    }
+    button { background-color: #003366; color: white; border: none; cursor: pointer; }
+    button:hover { opacity: 0.9; }
+    #qrcode { margin-top: 1rem; text-align: center; }
+    .linkbox { margin-top: 1rem; background: #eee; padding: 1rem; word-break: break-all; }
   </style>
 </head>
 <body>
   <header>
     <img src="./logo.png" alt="Bergwacht Logo" class="logo">
-    <span style="font-size: 1.5rem; font-weight: bold;">Einsatz erstellen</span>
+    <span style="font-size: 1.5rem; font-weight: bold;">Einsatz starten</span>
   </header>
   <main>
     <label for="einsatzname">Einsatzname</label>
-    <input type="text" id="einsatzname" placeholder="z. B. Lawinenabgang2025" />
+    <input type="text" id="einsatzname" placeholder="z. B. einsatz123" />
+    <button onclick="erstelleLink()">Link + QR-Code erzeugen</button>
 
-    <label for="datum">Datum</label>
-    <input type="date" id="datum" />
-
-    <button onclick="createLink()">Einsatz-Link erstellen</button>
-
-    <div id="qr-container"></div>
+    <div id="linkcontainer" style="display:none">
+      <div class="linkbox" id="einsatzlink"></div>
+      <div id="qrcode"></div>
+    </div>
   </main>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
   <script>
-    function createLink() {
+    function erstelleLink() {
       const einsatzname = document.getElementById("einsatzname").value.trim();
-      const datum = document.getElementById("datum").value;
-      if (!einsatzname) return alert("Bitte gib einen Einsatznamen ein.");
-
-      const link = `${window.location.origin}${window.location.pathname.replace("index.html", "")}einsatz.html?einsatz=${encodeURIComponent(einsatzname)}`;
-      window.open(link, '_blank');
-
-      const qr = new QRious({
-        element: document.createElement("canvas"),
-        value: link,
-        size: 250
+      if (!einsatzname) return alert("Bitte einen Einsatznamen angeben.");
+      const link = `https://laurasauerbwza.github.io/Einsatzboard/einsatz.html?einsatz=${encodeURIComponent(einsatzname)}`;
+      document.getElementById("einsatzlink").textContent = link;
+      document.getElementById("linkcontainer").style.display = "block";
+      QRCode.toCanvas(document.createElement("canvas"), link, { width: 200 }, function (err, canvas) {
+        if (!err) {
+          const qr = document.getElementById("qrcode");
+          qr.innerHTML = "";
+          qr.appendChild(canvas);
+        }
       });
-
-      const container = document.getElementById("qr-container");
-      container.innerHTML = `<p>QR-Code zum Einsatzlink:</p>`;
-      container.appendChild(qr.element);
-      container.innerHTML += `<p><a href="${link}" target="_blank">${link}</a></p>`;
     }
   </script>
 </body>
