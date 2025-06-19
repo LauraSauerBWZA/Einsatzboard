@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Einsatzdetails – Bergwacht Einsatzboard</title>
   <style>
     body {
       font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
       margin: 0;
       padding: 0;
-      background-color: #f9f9f9;
     }
     header {
       background-color: #003366;
@@ -25,8 +25,7 @@
     main {
       padding: 2rem;
     }
-    .hidden { display: none; }
-    h1, h2 {
+    h1 {
       color: #003366;
     }
     label {
@@ -34,105 +33,113 @@
       margin-top: 1rem;
       font-weight: bold;
     }
-    input, button {
+    input, button, textarea {
       width: 100%;
-      padding: 0.6rem;
+      padding: 0.8rem;
+      margin-top: 0.5rem;
       font-size: 1rem;
-      margin-top: 0.3rem;
     }
-    button.add {
+    button {
       background-color: #003366;
       color: white;
       border: none;
-      margin-top: 1rem;
-    }
-    button.delete {
-      background-color: #D52B1E;
-      color: white;
-      border: none;
+      cursor: pointer;
       margin-top: 2rem;
     }
-    .entry {
-      border: 1px solid #ccc;
-      padding: 0.5rem;
-      margin-top: 1rem;
+    button:hover {
+      opacity: 0.9;
+    }
+    .section {
+      margin-top: 2rem;
+      border-top: 1px solid #ccc;
+      padding-top: 1rem;
+    }
+    .location-entry {
+      margin-bottom: 1rem;
+    }
+    .small-button {
+      width: auto;
+      margin-left: 0.5rem;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.9rem;
     }
   </style>
 </head>
 <body>
   <header>
     <img src="logo.png" alt="Bergwacht Logo" class="logo">
-    <span style="font-size: 1.5rem; font-weight: bold;">Einsatzboard</span>
+    <span style="font-size: 1.5rem; font-weight: bold;">Einsatzdetails</span>
   </header>
+  <main>
+    <h1 id="einsatzTitel">Einsatzübersicht</h1>
 
-  <main id="mainContent" class="hidden">
-    <h1 id="einsatzTitel">Einsatz</h1>
+    <div class="section">
+      <label>Ansprechpartner / Funkrufnamen</label>
+      <div id="funkrufContainer"></div>
+      <input type="text" id="neuerFunkruf" placeholder="z. B. EL BW" onkeypress="if(event.key==='Enter'){event.preventDefault();addFunkruf()}" />
+      <button onclick="addFunkruf()">Hinzufügen</button>
+    </div>
 
-    <section>
-      <h2>Ansprechpartner / Funkrufnamen</h2>
-      <div id="ansprechpartnerContainer"></div>
-      <button class="add" onclick="addAnsprechpartner()">Neuen Ansprechpartner hinzufügen</button>
-    </section>
+    <div class="section">
+      <label>Koordinaten & Standortinfos</label>
+      <div id="standortContainer"></div>
+      <div class="location-entry">
+        <input type="text" placeholder="Koordinate (z. B. 48.2 8.7)" class="koordInput" />
+        <input type="text" placeholder="Standortbeschreibung (z. B. oberhalb Jägerpfad)" class="infoInput" />
+        <button class="small-button" onclick="addStandortField()">+</button>
+      </div>
+    </div>
 
-    <button class="delete" onclick="clearData()">Einsatzdaten löschen</button>
+    <div class="section">
+      <label>Funkkanäle</label>
+      <textarea id="funkkanaele" rows="3" placeholder="z. B. Kanal 4: EL, Kanal 1: Trupps"></textarea>
+    </div>
+
+    <div class="section">
+      <label>Sonstige Hinweise</label>
+      <textarea id="hinweise" rows="4" placeholder="z. B. Wetter, besondere Gefahren, Treffpunkt"></textarea>
+    </div>
+
+    <button onclick="deleteEinsatzdaten()">Einsatzdaten löschen</button>
   </main>
 
-  <div id="pinOverlay">
-    <main style="padding:2rem; text-align:center;">
-      <h2>PIN-Eingabe erforderlich</h2>
-      <input type="password" id="pinInput" placeholder="PIN eingeben">
-      <button onclick="checkPIN()">Freigeben</button>
-    </main>
-  </div>
-
   <script>
-    const einsatzId = new URLSearchParams(window.location.search).get("einsatz");
-    document.getElementById("einsatzTitel").textContent = "Einsatz: " + einsatzId;
+    const params = new URLSearchParams(window.location.search);
+    const einsatzId = params.get("einsatz");
+    const gespeichertePIN = localStorage.getItem(einsatzId + "_pin");
 
-    function checkPIN() {
-      const input = document.getElementById("pinInput").value;
-      const correct = localStorage.getItem(einsatzId + "_pin");
-      if (input === correct) {
-        document.getElementById("pinOverlay").classList.add("hidden");
-        document.getElementById("mainContent").classList.remove("hidden");
-        loadData();
-      } else {
-        alert("Falscher PIN");
-      }
+    if (!einsatzId || !gespeichertePIN) {
+      alert("Kein gültiger Einsatz ausgewählt oder PIN nicht vorhanden.");
+      location.href = "index.html";
     }
 
-    function addAnsprechpartner(value = "") {
-      const container = document.getElementById("ansprechpartnerContainer");
-      const entry = document.createElement("div");
-      entry.className = "entry";
-      const input = document.createElement("input");
-      input.type = "text";
-      input.placeholder = "z. B. EL BW / EL DRK";
-      input.value = value;
-      input.oninput = saveData;
-      entry.appendChild(input);
-      container.appendChild(entry);
-      saveData();
+    document.getElementById("einsatzTitel").textContent = `Einsatz: ${einsatzId}`;
+
+    function addFunkruf() {
+      const input = document.getElementById("neuerFunkruf");
+      if (input.value.trim() === "") return;
+      const div = document.createElement("div");
+      div.textContent = input.value.trim();
+      document.getElementById("funkrufContainer").appendChild(div);
+      input.value = "";
     }
 
-    function saveData() {
-      const ap = [];
-      document.querySelectorAll("#ansprechpartnerContainer input").forEach(input => ap.push(input.value));
-      localStorage.setItem(einsatzId + "_ap", JSON.stringify(ap));
+    function addStandortField() {
+      const container = document.getElementById("standortContainer");
+      const wrapper = document.createElement("div");
+      wrapper.classList.add("location-entry");
+      wrapper.innerHTML = `
+        <input type="text" placeholder="Koordinate (z. B. 48.2 8.7)" class="koordInput" />
+        <input type="text" placeholder="Standortbeschreibung" class="infoInput" />
+        <button class="small-button" onclick="this.parentElement.remove()">Löschen</button>
+      `;
+      container.appendChild(wrapper);
     }
 
-    function loadData() {
-      const raw = localStorage.getItem(einsatzId + "_ap");
-      if (!raw) return;
-      const ap = JSON.parse(raw);
-      ap.forEach(a => addAnsprechpartner(a));
-    }
-
-    function clearData() {
-      if (confirm("Wirklich löschen?")) {
-        localStorage.removeItem(einsatzId + "_ap");
+    function deleteEinsatzdaten() {
+      if (confirm("Möchtest du alle Daten dieses Einsatzes wirklich löschen?")) {
         localStorage.removeItem(einsatzId + "_pin");
-        location.reload();
+        location.href = "index.html";
       }
     }
   </script>
