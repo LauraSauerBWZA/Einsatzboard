@@ -100,36 +100,38 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
-  let einsatzURL = "";
+    let einsatzURL = "";
 
-  function copyLink() {
-    navigator.clipboard.writeText(einsatzURL);
-    alert("Link kopiert: " + einsatzURL);
-  }
-
-  function openInNewTab() {
-    if (einsatzURL) {
-      window.open(einsatzURL, '_blank');
+    function copyLink() {
+      navigator.clipboard.writeText(einsatzURL);
+      alert("Link kopiert: " + einsatzURL);
     }
-  }
 
-  document.getElementById("einsatzForm").addEventListener("submit", function(e) {
-    e.preventDefault();
-    const name = document.getElementById("einsatzName").value.trim();
-    const datum = document.getElementById("einsatzDatum").value;
-    const pin = document.getElementById("einsatzPIN").value.trim();
-    const einsatzId = `${name}-${datum}`.replace(/\s+/g, "_");
+    function openInNewTab() {
+      if (einsatzURL) {
+        window.open(einsatzURL, '_blank');
+      }
+    }
 
-    // Lokale Speicherung von PIN
-    localStorage.setItem(einsatzId + "_pin", pin);
+    document.getElementById("einsatzForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const name = document.getElementById("einsatzName").value.trim();
+      const datum = document.getElementById("einsatzDatum").value;
+      const pin = document.getElementById("einsatzPIN").value.trim();
+      const einsatzId = `${name}-${datum}`.replace(/\s+/g, "_");
 
-    // ✅ Korrigierter Link mit Projektpfad
-    einsatzURL = `${window.location.origin}/Einsatzboard/einsatz.html?einsatz=${encodeURIComponent(einsatzId)}`;
-    document.getElementById("shareLink").textContent = einsatzURL;
-    document.getElementById("linkOutput").style.display = "block";
-    document.getElementById("qrcode").innerHTML = "";
-    new QRCode(document.getElementById("qrcode"), einsatzURL);
-  });
-</script>
+      // Lokale Speicherung von PIN
+      localStorage.setItem(einsatzId + "_pin", pin);
+
+      // Dynamischer Pfad: berücksichtigt Subverzeichnisse wie /Einsatzboard/
+      const repoPath = window.location.pathname.split("/")[1]; // z. B. "Einsatzboard"
+      einsatzURL = `${window.location.origin}/${repoPath}/einsatz.html?einsatz=${encodeURIComponent(einsatzId)}`;
+
+      document.getElementById("shareLink").textContent = einsatzURL;
+      document.getElementById("linkOutput").style.display = "block";
+      document.getElementById("qrcode").innerHTML = "";
+      new QRCode(document.getElementById("qrcode"), einsatzURL);
+    });
+  </script>
 </body>
 </html>
