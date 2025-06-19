@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Firestore Test – Debug</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Einsatzdetails – Bergwacht</title>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyC99wLnaF1LhRoSJz_NSFvB2f7P5Bc",
@@ -19,52 +19,148 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-
-    const einsatzId = new URLSearchParams(window.location.search).get("einsatz") || "testdebug";
+    const einsatzId = new URLSearchParams(window.location.search).get("einsatz") || "demo";
     const einsatzRef = doc(db, "einsaetze", einsatzId);
 
-    async function saveTestData() {
-      const value = document.getElementById("testwert").value;
-      try {
-        await setDoc(einsatzRef, { testwert: value });
-        document.getElementById("status").textContent = "✅ Gespeichert";
-        console.log("Gespeichert in Firestore:", value);
-      } catch (err) {
-        document.getElementById("status").textContent = "❌ Fehler beim Speichern";
-        console.error("Fehler beim Speichern:", err);
-      }
-    }
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("einsatzTitel").textContent = `Einsatz: ${einsatzId}`;
+      loadData();
+    });
 
-    async function loadTestData() {
+    async function loadData() {
       try {
         const snapshot = await getDoc(einsatzRef);
-        if (snapshot.exists()) {
-          document.getElementById("testwert").value = snapshot.data().testwert || "";
-          document.getElementById("status").textContent = "✅ Daten geladen";
-        } else {
-          document.getElementById("status").textContent = "ℹ️ Noch keine Daten vorhanden";
+        if (!snapshot.exists()) return;
+        const data = snapshot.data();
+        if (Array.isArray(data.funkrufnamen)) {
+          data.funkrufnamen.forEach(name => addFunkruf(name));
         }
-      } catch (err) {
-        console.error("Fehler beim Laden:", err);
-        document.getElementById("status").textContent = "❌ Fehler beim Laden";
+        if (Array.isArray(data.standorte)) {
+          data.standorte.forEach(({ koord, info }) => addStandortField(koord, info));
+        }
+        document.getElementById("funkkanaele").value = data.funkkanaele || "";
+        document.getElementById("hinweise").value = data.hinweise || "";
+      } catch (error) {
+        console.error("Fehler beim Laden:", error);
       }
     }
 
-    document.addEventListener("DOMContentLoaded", loadTestData);
-    window.saveTestData = saveTestData;
+    async function saveData() {
+      try {
+        const funkrufnamen = Array.from(document.querySelectorAll("#funkrufContainer div")).map(div => div.textContent);
+        const standorte = Array.from(document.querySelectorAll(".location-entry")).map(entry => ({
+          koord: entry.querySelector(".koordInput")?.value || "",
+          info: entry.querySelector(".infoInput")?.value || ""
+        }));
+        const funkkanaele = document.getElementById("funkkanaele").value;
+        const hinweise = document.getElementById("hinweise").value;
+
+        await setDoc(einsatzRef, {
+          funkrufnamen,
+          standorte,
+          funkkanaele,
+          hinweise
+        });
+      } catch (error) {
+        console.error("Fehler beim Speichern:", error);
+      }
+    }
+
+    window.addFunkruf = function(value = "") {
+      const container = document.getElementById("funkrufContainer");
+      const div = document.createElement("div");
+      div.textContent = value || document.getElementById("neuerFunkruf").value;
+      if (!div.textContent.trim()) return;
+      container.appendChild(div);
+      document.getElementById("neuerFunkruf").value = "";
+      saveData();
+    }
+
+    window.addStandortField = function(koord = "", info = "") {
+      const container = document.getElementById("standortContainer");
+      const wrapper = document.createElement("div");
+      wrapper.classList.add("location-entry");
+      wrapper.innerHTML = `
+        <input type="text" placeholder="Koordinate" class="koordInput" value="${koord}" />
+        <input type="text" placeholder="Standortbeschreibung" class="infoInput" value="${info}" />
+        <button class="small-button" onclick="copyKoord(this)">Kopieren</button>
+        <button class="small-button" onclick="this.parentElement.remove(); saveData();">Löschen</button>
+      `;
+      container.appendChild(wrapper);
+
+      wrapper.querySelector(".koordInput").addEventListener("input", saveData);
+      wrapper.querySelector(".infoInput").addEventListener("input", saveData);
+    }
+
+    window.copyKoord = function(button) {
+      const koord = button.parentElement.querySelector(".koordInput").value;
+      navigator.clipboard.writeText(koord).then(() => {
+        button.textContent = "✓";
+        setTimeout(() => button.textContent = "Kopieren", 1500);
+      });
+    }
+
+    document.addEventListener("input", (e) => {
+      if (["funkkanaele", "hinweise"].includes(e.target.id)) {
+        saveData();
+      }
+    });
+
+    window.deleteEinsatzdaten = async function() {
+      if (confirm("Möchtest du diesen Einsatz wirklich zurücksetzen?")) {
+        await setDoc(einsatzRef, {});
+        location.reload();
+      }
+    }
   </script>
   <style>
-    body { font-family: sans-serif; padding: 2rem; background: #f4f4f4; }
-    input { padding: 0.6rem; width: 100%; font-size: 1rem; }
-    button { padding: 0.6rem 1rem; margin-top: 1rem; font-size: 1rem; background: #003366; color: white; border: none; cursor: pointer; }
-    #status { margin-top: 1rem; font-weight: bold; }
+    body { font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0; }
+    header { background-color: #003366; color: white; padding: 1rem; text-align: center; }
+    .logo { height: 40px; vertical-align: middle; margin-right: 10px; }
+    main { padding: 2rem; }
+    h1 { color: #003366; }
+    label { display: block; margin-top: 1rem; font-weight: bold; }
+    input, button, textarea {
+      width: 100%; padding: 0.8rem; margin-top: 0.5rem; font-size: 1rem;
+    }
+    button {
+      background-color: #003366; color: white; border: none; cursor: pointer; margin-top: 1rem;
+    }
+    button:hover { opacity: 0.9; }
+    .location-entry { margin-bottom: 1rem; }
+    .small-button {
+      width: auto; margin-left: 0.5rem; padding: 0.3rem 0.8rem; font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
-  <h1>📦 Firestore Verbindungstest</h1>
-  <label for="testwert">Testwert eingeben:</label>
-  <input type="text" id="testwert" placeholder="z. B. Hallo Firestore" />
-  <button onclick="saveTestData()">Speichern</button>
-  <div id="status">⏳</div>
+  <header>
+    <img src="./logo.png" alt="Bergwacht Logo" class="logo">
+    <span style="font-size: 1.5rem; font-weight: bold;">Einsatzdetails</span>
+  </header>
+  <main>
+    <h1 id="einsatzTitel">Einsatzübersicht</h1>
+
+    <label>Ansprechpartner / Funkrufnamen</label>
+    <div id="funkrufContainer"></div>
+    <input type="text" id="neuerFunkruf" placeholder="z. B. EL BW" onkeypress="if(event.key==='Enter'){event.preventDefault();addFunkruf()}" />
+    <button onclick="addFunkruf()">Hinzufügen</button>
+
+    <label>Koordinaten & Standortinfos</label>
+    <div id="standortContainer"></div>
+    <div class="location-entry">
+      <input type="text" placeholder="Koordinate (z. B. 48.2 8.7)" class="koordInput" />
+      <input type="text" placeholder="Standortbeschreibung (z. B. oberhalb Jägerpfad)" class="infoInput" />
+      <button class="small-button" onclick="addStandortField()">+</button>
+    </div>
+
+    <label>Funkkanäle</label>
+    <textarea id="funkkanaele" rows="3" placeholder="z. B. Kanal 4: EL, Kanal 1: Trupps"></textarea>
+
+    <label>Sonstige Hinweise</label>
+    <textarea id="hinweise" rows="4" placeholder="z. B. Wetter, besondere Gefahren, Treffpunkt"></textarea>
+
+    <button onclick="deleteEinsatzdaten()">Einsatzdaten löschen</button>
+  </main>
 </body>
 </html>
