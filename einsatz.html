@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Einsatzdetails – Bergwacht</title>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
@@ -47,13 +47,14 @@
 
     async function saveData() {
       try {
-        const funkrufnamen = Array.from(document.querySelectorAll("#funkrufContainer div")).map(div => div.textContent);
+        const funkrufnamen = Array.from(document.querySelectorAll("#funkrufContainer div")).map(div => div.textContent.trim()).filter(v => v);
         const standorte = Array.from(document.querySelectorAll(".location-entry")).map(entry => ({
           koord: entry.querySelector(".koordInput")?.value || "",
           info: entry.querySelector(".infoInput")?.value || ""
-        }));
-        const funkkanaele = document.getElementById("funkkanaele").value;
-        const hinweise = document.getElementById("hinweise").value;
+        })).filter(({koord, info}) => koord || info);
+
+        const funkkanaele = document.getElementById("funkkanaele")?.value || "";
+        const hinweise = document.getElementById("hinweise")?.value || "";
 
         await setDoc(einsatzRef, {
           funkrufnamen,
@@ -67,12 +68,14 @@
     }
 
     window.addFunkruf = function(value = "") {
+      const input = document.getElementById("neuerFunkruf");
       const container = document.getElementById("funkrufContainer");
+      const text = value || input.value;
+      if (!text.trim()) return;
       const div = document.createElement("div");
-      div.textContent = value || document.getElementById("neuerFunkruf").value;
-      if (!div.textContent.trim()) return;
+      div.textContent = text;
       container.appendChild(div);
-      document.getElementById("neuerFunkruf").value = "";
+      input.value = "";
       saveData();
     }
 
@@ -100,11 +103,8 @@
       });
     }
 
-    document.addEventListener("input", (e) => {
-      if (["funkkanaele", "hinweise"].includes(e.target.id)) {
-        saveData();
-      }
-    });
+    document.getElementById("funkkanaele").addEventListener("input", saveData);
+    document.getElementById("hinweise").addEventListener("input", saveData);
 
     window.deleteEinsatzdaten = async function() {
       if (confirm("Möchtest du diesen Einsatz wirklich zurücksetzen?")) {
