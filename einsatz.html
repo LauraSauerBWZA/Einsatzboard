@@ -22,7 +22,10 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const einsatzId = urlParams.get("einsatz") || "demo";
-    document.getElementById("einsatzTitel").textContent = `Einsatz: ${einsatzId}`;
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("einsatzTitel").textContent = `Einsatz: ${einsatzId}`;
+      loadData();
+    });
 
     const einsatzRef = doc(db, "einsaetze", einsatzId);
 
@@ -31,17 +34,13 @@
       if (!snapshot.exists()) return;
       const data = snapshot.data();
 
-      // Ansprechpartner/Funkrufnamen
       if (Array.isArray(data.funkrufnamen)) {
         data.funkrufnamen.forEach(name => addFunkruf(name));
       }
-
-      // Koordinatenfelder
       if (Array.isArray(data.standorte)) {
         data.standorte.forEach(([koord, info]) => addStandortField(koord, info));
       }
 
-      // Freitext
       document.getElementById("funkkanaele").value = data.funkkanaele || "";
       document.getElementById("hinweise").value = data.hinweise || "";
     }
@@ -83,12 +82,20 @@
         <button class="small-button" onclick="this.parentElement.remove(); saveData();">Löschen</button>
       `;
       container.appendChild(wrapper);
+
+      // neue Felder speichern sich selbst bei Eingabe
+      wrapper.querySelector(".koordInput").addEventListener("input", saveData);
+      wrapper.querySelector(".infoInput").addEventListener("input", saveData);
+
       saveData();
     }
 
-    document.addEventListener("DOMContentLoaded", loadData);
-    document.getElementById("funkkanaele").addEventListener("input", saveData);
-    document.getElementById("hinweise").addEventListener("input", saveData);
+    document.addEventListener("input", (e) => {
+      if (["funkkanaele", "hinweise"].includes(e.target.id)) {
+        saveData();
+      }
+    });
+
     window.deleteEinsatzdaten = async function() {
       if (confirm("Möchtest du diesen Einsatz wirklich zurücksetzen?")) {
         await setDoc(einsatzRef, {});
