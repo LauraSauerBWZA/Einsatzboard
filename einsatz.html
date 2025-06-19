@@ -25,6 +25,7 @@
     document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("einsatzTitel").textContent = `Einsatz: ${einsatzId}`;
       loadData();
+      addStandortField();
     });
 
     async function loadData() {
@@ -47,12 +48,13 @@
 
     async function saveData() {
       try {
-        const funkrufnamen = Array.from(document.querySelectorAll("#funkrufContainer div")).map(div => div.textContent.trim()).filter(v => v);
-        const standorte = Array.from(document.querySelectorAll(".location-entry")).map(entry => ({
-          koord: entry.querySelector(".koordInput")?.value || "",
-          info: entry.querySelector(".infoInput")?.value || ""
-        })).filter(({koord, info}) => koord || info);
-
+        const funkrufnamen = Array.from(document.querySelectorAll("#funkrufContainer div"))
+          .map(div => div.textContent.trim()).filter(v => v);
+        const standorte = Array.from(document.querySelectorAll(".location-entry"))
+          .map(entry => ({
+            koord: entry.querySelector(".koordInput")?.value || "",
+            info: entry.querySelector(".infoInput")?.value || ""
+          })).filter(({koord, info}) => koord || info);
         const funkkanaele = document.getElementById("funkkanaele")?.value || "";
         const hinweise = document.getElementById("hinweise")?.value || "";
 
@@ -148,11 +150,7 @@
 
     <label>Koordinaten & Standortinfos</label>
     <div id="standortContainer"></div>
-    <div class="location-entry">
-      <input type="text" placeholder="Koordinate (z. B. 48.2 8.7)" class="koordInput" />
-      <input type="text" placeholder="Standortbeschreibung (z. B. oberhalb Jägerpfad)" class="infoInput" />
-      <button class="small-button" onclick="addStandortField()">+</button>
-    </div>
+    <button onclick="addStandortField()">+ Standort hinzufügen</button>
 
     <label>Funkkanäle</label>
     <textarea id="funkkanaele" rows="3" placeholder="z. B. Kanal 4: EL, Kanal 1: Trupps"></textarea>
