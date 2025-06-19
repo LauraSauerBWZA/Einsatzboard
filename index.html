@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Einsatz erstellen – Bergwacht Einsatzboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bergwacht Einsatzboard – Startseite</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f9f9f9;
+      background-color: #f2f6fa;
       margin: 0;
       padding: 0;
     }
@@ -18,120 +18,69 @@
       text-align: center;
     }
     .logo {
-      height: 40px;
-      vertical-align: middle;
+      height: 50px;
       margin-right: 10px;
+      vertical-align: middle;
     }
     main {
       padding: 2rem;
-    }
-    h1 {
-      color: #003366;
-    }
-    p.description {
-      font-size: 1rem;
-      margin-bottom: 2rem;
-    }
-    label {
-      display: block;
-      margin-top: 1rem;
-      font-weight: bold;
+      max-width: 500px;
+      margin: 0 auto;
     }
     input, button {
       width: 100%;
-      padding: 0.8rem;
-      margin-top: 0.5rem;
-      font-size: 1rem;
+      padding: 1rem;
+      margin-top: 1rem;
+      font-size: 1.1rem;
     }
     button {
       background-color: #003366;
       color: white;
       border: none;
       cursor: pointer;
-      margin-top: 2rem;
     }
     button:hover {
-      opacity: 0.9;
-    }
-    #linkOutput, #qrcode {
-      margin-top: 2rem;
-      text-align: center;
-    }
-    #shareLink {
-      word-break: break-all;
-      display: inline-block;
-      margin-top: 1rem;
-      font-weight: bold;
-      color: #003366;
+      background-color: #002244;
     }
   </style>
 </head>
 <body>
   <header>
-    <img src="logo.png" alt="Bergwacht Logo" class="logo">
-    <span style="font-size: 1.5rem; font-weight: bold;">Einsatzboard</span>
+    <img src="logo.png" class="logo" alt="Bergwacht Logo">
+    <span style="font-size: 1.8rem; font-weight: bold;">Einsatz erstellen</span>
   </header>
   <main>
-    <h1>Neuen Einsatz anlegen</h1>
-    <p class="description">Erstelle hier eine neue Einsatzseite zur Weitergabe an Einsatzkräfte. Nach dem Anlegen erhältst du einen QR-Code und einen Link zur PIN-geschützten Detailseite.</p>
-    <form id="einsatzForm">
-      <label for="einsatzName">Einsatzname</label>
-      <input type="text" id="einsatzName" required placeholder="z. B. Lochenstein" />
+    <label for="einsatzname">Einsatzname</label>
+    <input type="text" id="einsatzname" placeholder="z. B. Lawine_Grosshang">
 
-      <label for="einsatzDatum">Datum</label>
-      <input type="date" id="einsatzDatum" required />
+    <label for="datum">Datum</label>
+    <input type="date" id="datum">
 
-      <label for="einsatzPIN">PIN für Einsatzkräfte</label>
-      <input type="password" id="einsatzPIN" required placeholder="z. B. 1124" />
+    <button onclick="erstellen()">Einsatz starten und Link generieren</button>
+    <button id="oeffnen" style="display:none; margin-top: 0.5rem;" onclick="neuesFenster()">Link in neuem Tab öffnen</button>
+    <p id="link"></p>
 
-      <button type="submit">Einsatz erstellen</button>
-    </form>
+    <script>
+      function erstellen() {
+        const einsatz = document.getElementById('einsatzname').value.trim().replace(/\s+/g, '_');
+        const datum = document.getElementById('datum').value;
 
-    <div id="linkOutput" style="display:none;">
-      <p><strong>Freigabe-Link für Einsatzkräfte:</strong></p>
-      <div>
-        <span id="shareLink"></span>
-        <button onclick="copyLink()">Link kopieren</button>
-        <button onclick="openInNewTab()">In neuem Tab öffnen</button>
-      </div>
-      <div id="qrcode"></div>
-    </div>
-  </main>
+        if (!einsatz || !datum) {
+          alert("Bitte Einsatzname und Datum eingeben.");
+          return;
+        }
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script>
-    let einsatzURL = "";
-
-    function copyLink() {
-      navigator.clipboard.writeText(einsatzURL);
-      alert("Link kopiert: " + einsatzURL);
-    }
-
-    function openInNewTab() {
-      if (einsatzURL) {
-        window.open(einsatzURL, '_blank');
+        const url = `${location.origin}/Einsatzboard/einsatz.html?einsatz=${einsatz}_${datum}`;
+        document.getElementById('link').innerHTML = `<strong>Teilen:</strong> <a href="${url}" target="_blank">${url}</a>`;
+        document.getElementById('oeffnen').style.display = 'block';
+        document.getElementById('oeffnen').setAttribute('data-url', url);
       }
-    }
 
-    document.getElementById("einsatzForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const name = document.getElementById("einsatzName").value.trim();
-      const datum = document.getElementById("einsatzDatum").value;
-      const pin = document.getElementById("einsatzPIN").value.trim();
-      const einsatzId = `${name}-${datum}`.replace(/\s+/g, "_");
-
-      // Lokale Speicherung von PIN
-      localStorage.setItem(einsatzId + "_pin", pin);
-
-      // Dynamischer Pfad: berücksichtigt Subverzeichnisse wie /Einsatzboard/
-      const repoPath = window.location.pathname.split("/")[1]; // z. B. "Einsatzboard"
-      einsatzURL = `${window.location.origin}/${repoPath}/einsatz.html?einsatz=${encodeURIComponent(einsatzId)}`;
-
-      document.getElementById("shareLink").textContent = einsatzURL;
-      document.getElementById("linkOutput").style.display = "block";
-      document.getElementById("qrcode").innerHTML = "";
-      new QRCode(document.getElementById("qrcode"), einsatzURL);
-    });
-  </script>
+      function neuesFenster() {
+        const link = document.getElementById('oeffnen').getAttribute('data-url');
+        window.open(link, '_blank');
+      }
+    </script>
+  </main>
 </body>
 </html>
