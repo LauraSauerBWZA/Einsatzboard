@@ -3,53 +3,88 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Einsatz starten – Bergwacht</title>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+  <title>Einsatz erstellen – Bergwacht</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 2rem; }
-    header { background-color: #003366; color: white; padding: 1rem; text-align: center; }
+    body { font-family: Arial, sans-serif; background-color: #f0f4f8; margin: 0; padding: 0; text-align: center; }
+    header { background-color: #003366; color: white; padding: 1rem; }
     .logo { height: 40px; vertical-align: middle; margin-right: 10px; }
-    main { max-width: 600px; margin: auto; }
-    label { display: block; margin-top: 1rem; font-weight: bold; }
+    main { padding: 2rem; }
     input, button {
-      width: 100%; padding: 0.8rem; margin-top: 0.5rem; font-size: 1rem;
+      padding: 0.8rem; font-size: 1rem; margin: 1rem auto; width: 80%; max-width: 400px;
     }
-    button { background-color: #003366; color: white; border: none; cursor: pointer; }
+    input {
+      background-color: #ffffff; border: 2px solid #cccccc; border-radius: 4px;
+    }
+    button {
+      background-color: #003366; color: white; border: none; cursor: pointer; border-radius: 4px;
+    }
     button:hover { opacity: 0.9; }
-    #qrcode { margin-top: 1rem; text-align: center; }
-    .linkbox { margin-top: 1rem; background: #eee; padding: 1rem; word-break: break-all; }
+    #qrcode { margin-top: 2rem; }
+    .linkbox {
+      margin: 1rem auto; max-width: 400px; word-break: break-word; background: #e6f0ff;
+      padding: 1rem; border-left: 5px solid #003366; border-radius: 4px;
+    }
+    .highlight-input {
+      background-color: #fffbe6;
+    }
   </style>
 </head>
 <body>
   <header>
     <img src="./logo.png" alt="Bergwacht Logo" class="logo">
-    <span style="font-size: 1.5rem; font-weight: bold;">Einsatz starten</span>
+    <span style="font-size: 1.5rem; font-weight: bold;">Einsatz erstellen</span>
   </header>
   <main>
-    <label for="einsatzname">Einsatzname</label>
-    <input type="text" id="einsatzname" placeholder="z. B. einsatz123" />
-    <button onclick="erstelleLink()">Link + QR-Code erzeugen</button>
+    <input type="text" id="einsatzName" class="highlight-input" placeholder="Einsatzname z. B. albstadt-bergwiese-1">
+    <button onclick="createEinsatz()">Einsatz starten</button>
 
-    <div id="linkcontainer" style="display:none">
-      <div class="linkbox" id="einsatzlink"></div>
+    <div id="output" style="display:none">
+      <div class="linkbox">
+        <a id="einsatzLink" href="#" target="_blank"></a>
+        <button onclick="copyLink()">Link kopieren</button>
+        <button onclick="downloadQR()">QR-Code herunterladen</button>
+      </div>
       <div id="qrcode"></div>
     </div>
   </main>
 
   <script>
-    function erstelleLink() {
-      const einsatzname = document.getElementById("einsatzname").value.trim();
-      if (!einsatzname) return alert("Bitte einen Einsatznamen angeben.");
-      const link = `https://laurasauerbwza.github.io/Einsatzboard/einsatz.html?einsatz=${encodeURIComponent(einsatzname)}`;
-      document.getElementById("einsatzlink").textContent = link;
-      document.getElementById("linkcontainer").style.display = "block";
-      QRCode.toCanvas(document.createElement("canvas"), link, { width: 200 }, function (err, canvas) {
-        if (!err) {
-          const qr = document.getElementById("qrcode");
-          qr.innerHTML = "";
-          qr.appendChild(canvas);
-        }
+    let currentUrl = "";
+
+    function createEinsatz() {
+      const einsatzName = document.getElementById("einsatzName").value.trim();
+      if (!einsatzName) {
+        alert("Bitte einen Einsatznamen eingeben.");
+        return;
+      }
+      const url = `einsatz.html?einsatz=${encodeURIComponent(einsatzName)}`;
+      currentUrl = url;
+      document.getElementById("einsatzLink").textContent = url;
+      document.getElementById("einsatzLink").href = url;
+      document.getElementById("qrcode").innerHTML = "";
+
+      const qrContainer = document.getElementById("qrcode");
+      const qrCanvas = document.createElement("canvas");
+      new QRCode(qrCanvas, url);
+      qrContainer.appendChild(qrCanvas);
+
+      document.getElementById("output").style.display = "block";
+      window.open(url, '_blank');
+    }
+
+    function copyLink() {
+      navigator.clipboard.writeText(currentUrl).then(() => {
+        alert("Link kopiert!");
       });
+    }
+
+    function downloadQR() {
+      const canvas = document.querySelector("#qrcode canvas");
+      const link = document.createElement("a");
+      link.download = "einsatz-qr.png";
+      link.href = canvas.toDataURL();
+      link.click();
     }
   </script>
 </body>
