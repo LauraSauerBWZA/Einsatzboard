@@ -92,6 +92,7 @@
       <div>
         <span id="shareLink"></span>
         <button onclick="copyLink()">Link kopieren</button>
+        <button onclick="openInNewTab()">In neuem Tab öffnen</button>
       </div>
       <div id="qrcode"></div>
     </div>
@@ -99,10 +100,17 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
+    let einsatzURL = "";
+
     function copyLink() {
-      const link = document.getElementById("shareLink").textContent;
-      navigator.clipboard.writeText(link);
-      alert("Link kopiert: " + link);
+      navigator.clipboard.writeText(einsatzURL);
+      alert("Link kopiert: " + einsatzURL);
+    }
+
+    function openInNewTab() {
+      if (einsatzURL) {
+        window.open(einsatzURL, '_blank');
+      }
     }
 
     document.getElementById("einsatzForm").addEventListener("submit", function(e) {
@@ -116,7 +124,7 @@
       localStorage.setItem(einsatzId + "_pin", pin);
 
       // Link und QR-Code anzeigen
-      const einsatzURL = `${window.location.origin}/einsatz.html?einsatz=${encodeURIComponent(einsatzId)}`;
+      einsatzURL = `${window.location.origin}/einsatz.html?einsatz=${encodeURIComponent(einsatzId)}`;
       document.getElementById("shareLink").textContent = einsatzURL;
       document.getElementById("linkOutput").style.display = "block";
       document.getElementById("qrcode").innerHTML = "";
