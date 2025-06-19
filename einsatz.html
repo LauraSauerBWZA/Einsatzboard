@@ -1,1 +1,140 @@
-<!-- Hier müsste der aktuelle einsatz.html-Inhalt stehen -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Einsatzdetails – Bergwacht Einsatzboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+    }
+    header {
+      background-color: #003366;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    .logo {
+      height: 40px;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+    main {
+      padding: 2rem;
+    }
+    .hidden { display: none; }
+    h1, h2 {
+      color: #003366;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    input, button {
+      width: 100%;
+      padding: 0.6rem;
+      font-size: 1rem;
+      margin-top: 0.3rem;
+    }
+    button.add {
+      background-color: #003366;
+      color: white;
+      border: none;
+      margin-top: 1rem;
+    }
+    button.delete {
+      background-color: #D52B1E;
+      color: white;
+      border: none;
+      margin-top: 2rem;
+    }
+    .entry {
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="logo.png" alt="Bergwacht Logo" class="logo">
+    <span style="font-size: 1.5rem; font-weight: bold;">Einsatzboard</span>
+  </header>
+
+  <main id="mainContent" class="hidden">
+    <h1 id="einsatzTitel">Einsatz</h1>
+
+    <section>
+      <h2>Ansprechpartner / Funkrufnamen</h2>
+      <div id="ansprechpartnerContainer"></div>
+      <button class="add" onclick="addAnsprechpartner()">Neuen Ansprechpartner hinzufügen</button>
+    </section>
+
+    <button class="delete" onclick="clearData()">Einsatzdaten löschen</button>
+  </main>
+
+  <div id="pinOverlay">
+    <main style="padding:2rem; text-align:center;">
+      <h2>PIN-Eingabe erforderlich</h2>
+      <input type="password" id="pinInput" placeholder="PIN eingeben">
+      <button onclick="checkPIN()">Freigeben</button>
+    </main>
+  </div>
+
+  <script>
+    const einsatzId = new URLSearchParams(window.location.search).get("einsatz");
+    document.getElementById("einsatzTitel").textContent = "Einsatz: " + einsatzId;
+
+    function checkPIN() {
+      const input = document.getElementById("pinInput").value;
+      const correct = localStorage.getItem(einsatzId + "_pin");
+      if (input === correct) {
+        document.getElementById("pinOverlay").classList.add("hidden");
+        document.getElementById("mainContent").classList.remove("hidden");
+        loadData();
+      } else {
+        alert("Falscher PIN");
+      }
+    }
+
+    function addAnsprechpartner(value = "") {
+      const container = document.getElementById("ansprechpartnerContainer");
+      const entry = document.createElement("div");
+      entry.className = "entry";
+      const input = document.createElement("input");
+      input.type = "text";
+      input.placeholder = "z. B. EL BW / EL DRK";
+      input.value = value;
+      input.oninput = saveData;
+      entry.appendChild(input);
+      container.appendChild(entry);
+      saveData();
+    }
+
+    function saveData() {
+      const ap = [];
+      document.querySelectorAll("#ansprechpartnerContainer input").forEach(input => ap.push(input.value));
+      localStorage.setItem(einsatzId + "_ap", JSON.stringify(ap));
+    }
+
+    function loadData() {
+      const raw = localStorage.getItem(einsatzId + "_ap");
+      if (!raw) return;
+      const ap = JSON.parse(raw);
+      ap.forEach(a => addAnsprechpartner(a));
+    }
+
+    function clearData() {
+      if (confirm("Wirklich löschen?")) {
+        localStorage.removeItem(einsatzId + "_ap");
+        localStorage.removeItem(einsatzId + "_pin");
+        location.reload();
+      }
+    }
+  </script>
+</body>
+</html>
