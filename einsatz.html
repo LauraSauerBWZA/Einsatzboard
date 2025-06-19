@@ -86,65 +86,54 @@
     }
 
     function saveData(type) {
-      if (type === 'ansprechpartner') {
-        const val = document.getElementById("ansprechpartner").value;
-        db.ref(`einsaetze/${einsatz}/ansprechpartner`).push(val);
-      } else if (type === 'funkkanal') {
-        const val = document.getElementById("funkkanal").value;
-        db.ref(`einsaetze/${einsatz}/funkkanaele`).push(val);
-      } else if (type === 'hinweis') {
-        const val = document.getElementById("hinweis").value;
-        db.ref(`einsaetze/${einsatz}/hinweise`).push(val);
-      } else if (type === 'koordinaten') {
-        const val = document.getElementById("koord").value;
-        const info = document.getElementById("koordInfo").value;
-        db.ref(`einsaetze/${einsatz}/koordinaten`).push({ ort: val, info });
+      let refPath = `einsaetze/${einsatz}/${type}`;
+      let value;
+
+      if (type === 'koordinaten') {
+        const ort = document.getElementById("koord").value.trim();
+        const info = document.getElementById("koordInfo").value.trim();
+        if (!ort) return;
+        value = { ort, info };
+      } else {
+        const input = document.getElementById(type).value.trim();
+        if (!input) return;
+        value = input;
       }
+
+      db.ref(refPath).push(value).then(() => {
+        renderData();
+        if (type !== 'koordinaten') document.getElementById(type).value = "";
+        else {
+          document.getElementById("koord").value = "";
+          document.getElementById("koordInfo").value = "";
+        }
+      });
     }
 
     function renderData() {
-      db.ref(`einsaetze/${einsatz}/ansprechpartner`).on("value", snapshot => {
-        const list = snapshot.val() || {};
-        const container = document.getElementById("ansprechpartnerDisplay");
-        container.innerHTML = "";
-        for (let key in list) {
-          const div = document.createElement("div");
-          div.textContent = list[key];
-          container.appendChild(div);
-        }
-      });
+      const sections = [
+        { key: 'ansprechpartner', containerId: 'ansprechpartnerDisplay' },
+        { key: 'funkkanaele', containerId: 'funkkanalDisplay' },
+        { key: 'hinweise', containerId: 'hinweisDisplay' },
+        { key: 'koordinaten', containerId: 'koordDisplay', isCoord: true }
+      ];
 
-      db.ref(`einsaetze/${einsatz}/funkkanaele`).on("value", snapshot => {
-        const list = snapshot.val() || {};
-        const container = document.getElementById("funkkanalDisplay");
-        container.innerHTML = "";
-        for (let key in list) {
-          const div = document.createElement("div");
-          div.textContent = list[key];
-          container.appendChild(div);
-        }
-      });
-
-      db.ref(`einsaetze/${einsatz}/hinweise`).on("value", snapshot => {
-        const list = snapshot.val() || {};
-        const container = document.getElementById("hinweisDisplay");
-        container.innerHTML = "";
-        for (let key in list) {
-          const div = document.createElement("div");
-          div.textContent = list[key];
-          container.appendChild(div);
-        }
-      });
-
-      db.ref(`einsaetze/${einsatz}/koordinaten`).on("value", snapshot => {
-        const list = snapshot.val() || {};
-        const container = document.getElementById("koordDisplay");
-        container.innerHTML = "";
-        for (let key in list) {
-          const div = document.createElement("div");
-          div.innerHTML = `<strong>${list[key].ort}</strong>: ${list[key].info}`;
-          container.appendChild(div);
-        }
+      sections.forEach(({ key, containerId, isCoord }) => {
+        db.ref(`einsaetze/${einsatz}/${key}`).on("value", snapshot => {
+          const list = snapshot.val() || {};
+          const container = document.getElementById(containerId);
+          container.innerHTML = "";
+          for (let k in list) {
+            const div = document.createElement("div");
+            if (isCoord) {
+              const coord = list[k];
+              div.innerHTML = `<strong>${coord.ort}</strong>: ${coord.info}`;
+            } else {
+              div.textContent = list[k];
+            }
+            container.appendChild(div);
+          }
+        });
       });
     }
 
