@@ -1,180 +1,97 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Einsatzdetails – Bergwacht Einsatzboard</title>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyC09wlAw-fzzThLjRoS_z_NSFvYB2TP5Bc",
-      authDomain: "einsatzboard.firebaseapp.com",
-      projectId: "einsatzboard",
-      storageBucket: "einsatzboard.appspot.com",
-      messagingSenderId: "275404072041",
-      appId: "1:275404072041:web:e6123fc9c5632cf2652ef8"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const einsatzId = urlParams.get("einsatz") || "demo";
-    document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("einsatzTitel").textContent = `Einsatz: ${einsatzId}`;
-      loadData();
-    });
-
-    const einsatzRef = doc(db, "einsaetze", einsatzId);
-
-    async function loadData() {
-      const snapshot = await getDoc(einsatzRef);
-      if (!snapshot.exists()) return;
-      const data = snapshot.data();
-
-      if (Array.isArray(data.funkrufnamen)) {
-        data.funkrufnamen.forEach(name => addFunkruf(name));
-      }
-      if (Array.isArray(data.standorte)) {
-        data.standorte.forEach(([koord, info]) => addStandortField(koord, info));
-      }
-
-      document.getElementById("funkkanaele").value = data.funkkanaele || "";
-      document.getElementById("hinweise").value = data.hinweise || "";
-    }
-
-    async function saveData() {
-      const funkrufnamen = Array.from(document.querySelectorAll("#funkrufContainer div")).map(div => div.textContent);
-      const standorte = Array.from(document.querySelectorAll(".location-entry"))
-        .map(entry => [
-          entry.querySelector(".koordInput")?.value || "",
-          entry.querySelector(".infoInput")?.value || ""
-        ]);
-      const funkkanaele = document.getElementById("funkkanaele").value;
-      const hinweise = document.getElementById("hinweise").value;
-
-      await setDoc(einsatzRef, {
-        funkrufnamen,
-        standorte,
-        funkkanaele,
-        hinweise
-      });
-    }
-
-    window.addFunkruf = function(value = "") {
-      const container = document.getElementById("funkrufContainer");
-      const div = document.createElement("div");
-      div.textContent = value || document.getElementById("neuerFunkruf").value;
-      if (!div.textContent.trim()) return;
-      container.appendChild(div);
-      document.getElementById("neuerFunkruf").value = "";
-      saveData();
-    }
-
-    window.addStandortField = function(koord = "", info = "") {
-      const container = document.getElementById("standortContainer");
-      const wrapper = document.createElement("div");
-      wrapper.classList.add("location-entry");
-      wrapper.innerHTML = `
-        <input type="text" placeholder="Koordinate" class="koordInput" value="${koord}" />
-        <button class="copy-button" onclick="copyCoord(this)">Kopieren</button>
-        <span class="copy-feedback" style="display:none;">✓</span>
-        <input type="text" placeholder="Standortbeschreibung" class="infoInput" value="${info}" />
-        <button class="small-button" onclick="this.parentElement.remove(); saveData();">Löschen</button>
-      `;
-      container.appendChild(wrapper);
-
-      wrapper.querySelector(".koordInput").addEventListener("input", saveData);
-      wrapper.querySelector(".infoInput").addEventListener("input", saveData);
-
-      saveData();
-    }
-
-    window.copyCoord = function(button) {
-      const input = button.previousElementSibling;
-      navigator.clipboard.writeText(input.value);
-      const feedback = button.nextElementSibling;
-      feedback.style.display = "inline";
-      setTimeout(() => feedback.style.display = "none", 1500);
-    }
-
-    document.addEventListener("input", (e) => {
-      if (["funkkanaele", "hinweise"].includes(e.target.id)) {
-        saveData();
-      }
-    });
-
-    window.deleteEinsatzdaten = async function() {
-      if (confirm("Möchtest du diesen Einsatz wirklich zurücksetzen?")) {
-        await setDoc(einsatzRef, {});
-        location.reload();
-      }
-    }
-  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bergwacht Einsatz erstellen</title>
   <style>
-    body { font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0; }
-    header { background-color: #003366; color: white; padding: 1rem; text-align: center; }
-    .logo { height: 40px; vertical-align: middle; margin-right: 10px; }
-    main { padding: 2rem; }
-    h1 { color: #003366; }
-    label { display: block; margin-top: 1rem; font-weight: bold; }
-    input, button, textarea {
-      padding: 0.8rem; margin-top: 0.5rem; font-size: 1rem;
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
     }
-    input[type="text"] { width: calc(100% - 12px); }
-    textarea { width: 100%; }
+    header {
+      background-color: #003366;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    .logo {
+      height: 40px;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+    main {
+      padding: 2rem;
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin: 1rem 0 0.5rem;
+      font-weight: bold;
+    }
+    input {
+      padding: 0.5rem;
+      font-size: 1rem;
+      width: 80%;
+      max-width: 400px;
+    }
     button {
-      background-color: #003366; color: white; border: none; cursor: pointer; margin-top: 1rem;
+      margin-top: 1.5rem;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      background-color: #003366;
+      color: white;
+      border: none;
+      cursor: pointer;
     }
-    button:hover { opacity: 0.9; }
-    .section { margin-top: 2rem; border-top: 1px solid #ccc; padding-top: 1rem; }
-    .location-entry { margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
-    .koordInput { flex: 2; }
-    .infoInput { flex: 3; }
-    .copy-button, .small-button { flex: none; }
-    .copy-feedback { color: green; font-weight: bold; }
+    button:hover {
+      opacity: 0.9;
+    }
+    #qr-container {
+      margin-top: 2rem;
+    }
   </style>
 </head>
 <body>
   <header>
     <img src="./logo.png" alt="Bergwacht Logo" class="logo">
-    <span style="font-size: 1.5rem; font-weight: bold;">Einsatzdetails</span>
+    <span style="font-size: 1.5rem; font-weight: bold;">Einsatz erstellen</span>
   </header>
   <main>
-    <h1 id="einsatzTitel">Einsatzübersicht</h1>
+    <label for="einsatzname">Einsatzname</label>
+    <input type="text" id="einsatzname" placeholder="z. B. Lawinenabgang2025" />
 
-    <div class="section">
-      <label>Ansprechpartner / Funkrufnamen</label>
-      <div id="funkrufContainer"></div>
-      <input type="text" id="neuerFunkruf" placeholder="z. B. EL BW" onkeypress="if(event.key==='Enter'){event.preventDefault();addFunkruf()}" />
-      <button onclick="addFunkruf()">Hinzufügen</button>
-    </div>
+    <label for="datum">Datum</label>
+    <input type="date" id="datum" />
 
-    <div class="section">
-      <label>Koordinaten & Standortinfos</label>
-      <div id="standortContainer"></div>
-      <div class="location-entry">
-        <input type="text" placeholder="Koordinate (z. B. 48.2 8.7)" class="koordInput" oninput="saveData()" />
-        <button class="copy-button" onclick="copyCoord(this)">Kopieren</button>
-        <span class="copy-feedback" style="display:none;">✓</span>
-        <input type="text" placeholder="Standortbeschreibung (z. B. oberhalb Jägerpfad)" class="infoInput" oninput="saveData()" />
-        <button class="small-button" onclick="addStandortField()">+</button>
-      </div>
-    </div>
+    <button onclick="createLink()">Einsatz-Link erstellen</button>
 
-    <div class="section">
-      <label>Funkkanäle</label>
-      <textarea id="funkkanaele" rows="3" placeholder="z. B. Kanal 4: EL, Kanal 1: Trupps"></textarea>
-    </div>
-
-    <div class="section">
-      <label>Sonstige Hinweise</label>
-      <textarea id="hinweise" rows="4" placeholder="z. B. Wetter, besondere Gefahren, Treffpunkt"></textarea>
-    </div>
-
-    <button onclick="deleteEinsatzdaten()">Einsatzdaten löschen</button>
+    <div id="qr-container"></div>
   </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+  <script>
+    function createLink() {
+      const einsatzname = document.getElementById("einsatzname").value.trim();
+      const datum = document.getElementById("datum").value;
+      if (!einsatzname) return alert("Bitte gib einen Einsatznamen ein.");
+
+      const link = `${window.location.origin}${window.location.pathname.replace("index.html", "")}einsatz.html?einsatz=${encodeURIComponent(einsatzname)}`;
+      window.open(link, '_blank');
+
+      const qr = new QRious({
+        element: document.createElement("canvas"),
+        value: link,
+        size: 250
+      });
+
+      const container = document.getElementById("qr-container");
+      container.innerHTML = `<p>QR-Code zum Einsatzlink:</p>`;
+      container.appendChild(qr.element);
+      container.innerHTML += `<p><a href="${link}" target="_blank">${link}</a></p>`;
+    }
+  </script>
 </body>
 </html>
