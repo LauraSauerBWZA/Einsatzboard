@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Einsatzdetails – Bergwacht Einsatzboard</title>
+  <title>Einsatzdetails – Debug</title>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyC09wlAw-fzzThLjRoS_z_NSFvYB2TP5Bc",
+      apiKey: "AIzaSyC99wLnaF1LhRoSJz_NSFvB2f7P5Bc",
       authDomain: "einsatzboard.firebaseapp.com",
       projectId: "einsatzboard",
       storageBucket: "einsatzboard.appspot.com",
@@ -22,6 +22,8 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const einsatzId = urlParams.get("einsatz") || "demo";
+    console.log("Einsatz-ID:", einsatzId);
+
     const einsatzRef = doc(db, "einsaetze", einsatzId);
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -30,36 +32,47 @@
     });
 
     async function loadData() {
-      const snapshot = await getDoc(einsatzRef);
-      if (!snapshot.exists()) return;
-      const data = snapshot.data();
+      try {
+        const snapshot = await getDoc(einsatzRef);
+        console.log("Dokument geladen:", snapshot.exists());
+        if (!snapshot.exists()) return;
+        const data = snapshot.data();
 
-      if (Array.isArray(data.funkrufnamen)) {
-        data.funkrufnamen.forEach(name => addFunkruf(name));
-      }
-      if (Array.isArray(data.standorte)) {
-        data.standorte.forEach(([koord, info]) => addStandortField(koord, info));
-      }
+        if (Array.isArray(data.funkrufnamen)) {
+          data.funkrufnamen.forEach(name => addFunkruf(name));
+        }
+        if (Array.isArray(data.standorte)) {
+          data.standorte.forEach(([koord, info]) => addStandortField(koord, info));
+        }
 
-      document.getElementById("funkkanaele").value = data.funkkanaele || "";
-      document.getElementById("hinweise").value = data.hinweise || "";
+        document.getElementById("funkkanaele").value = data.funkkanaele || "";
+        document.getElementById("hinweise").value = data.hinweise || "";
+      } catch (error) {
+        console.error("Fehler beim Laden der Daten:", error);
+      }
     }
 
     async function saveData() {
-      const funkrufnamen = Array.from(document.querySelectorAll("#funkrufContainer div")).map(div => div.textContent);
-      const standorte = Array.from(document.querySelectorAll(".location-entry")).map(entry => [
-        entry.querySelector(".koordInput")?.value || "",
-        entry.querySelector(".infoInput")?.value || ""
-      ]);
-      const funkkanaele = document.getElementById("funkkanaele").value;
-      const hinweise = document.getElementById("hinweise").value;
+      console.log("Speichere Daten...");
+      try {
+        const funkrufnamen = Array.from(document.querySelectorAll("#funkrufContainer div")).map(div => div.textContent);
+        const standorte = Array.from(document.querySelectorAll(".location-entry")).map(entry => [
+          entry.querySelector(".koordInput")?.value || "",
+          entry.querySelector(".infoInput")?.value || ""
+        ]);
+        const funkkanaele = document.getElementById("funkkanaele").value;
+        const hinweise = document.getElementById("hinweise").value;
 
-      await setDoc(einsatzRef, {
-        funkrufnamen,
-        standorte,
-        funkkanaele,
-        hinweise
-      });
+        await setDoc(einsatzRef, {
+          funkrufnamen,
+          standorte,
+          funkkanaele,
+          hinweise
+        });
+        console.log("Gespeichert ✔");
+      } catch (error) {
+        console.error("Fehler beim Speichern:", error);
+      }
     }
 
     window.addFunkruf = function(value = "") {
@@ -79,23 +92,12 @@
       wrapper.innerHTML = `
         <input type="text" placeholder="Koordinate" class="koordInput" value="${koord}" />
         <input type="text" placeholder="Standortbeschreibung" class="infoInput" value="${info}" />
-        <button class="small-button" onclick="copyKoord(this)">Kopieren</button>
-        <button class="small-button" onclick="this.parentElement.remove(); saveData();">Löschen</button>
+        <button onclick="saveData()">💾</button>
       `;
       container.appendChild(wrapper);
 
       wrapper.querySelector(".koordInput").addEventListener("input", saveData);
       wrapper.querySelector(".infoInput").addEventListener("input", saveData);
-
-      saveData();
-    }
-
-    window.copyKoord = function(button) {
-      const koord = button.parentElement.querySelector(".koordInput").value;
-      navigator.clipboard.writeText(koord).then(() => {
-        button.textContent = "✓";
-        setTimeout(() => button.textContent = "Kopieren", 1500);
-      });
     }
 
     document.addEventListener("input", (e) => {
@@ -106,66 +108,55 @@
 
     window.deleteEinsatzdaten = async function() {
       if (confirm("Möchtest du diesen Einsatz wirklich zurücksetzen?")) {
-        await setDoc(einsatzRef, {});
-        location.reload();
+        try {
+          await setDoc(einsatzRef, {});
+          location.reload();
+        } catch (error) {
+          console.error("Fehler beim Löschen:", error);
+        }
       }
     }
   </script>
   <style>
-    body { font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background-color: #f0f0f0; margin: 0; padding: 0; }
     header { background-color: #003366; color: white; padding: 1rem; text-align: center; }
     .logo { height: 40px; vertical-align: middle; margin-right: 10px; }
     main { padding: 2rem; }
-    h1 { color: #003366; }
     label { display: block; margin-top: 1rem; font-weight: bold; }
-    input, button, textarea {
-      width: 100%; padding: 0.8rem; margin-top: 0.5rem; font-size: 1rem;
+    input, textarea, button {
+      width: 100%; padding: 0.6rem; font-size: 1rem; margin-top: 0.5rem;
     }
-    button {
-      background-color: #003366; color: white; border: none; cursor: pointer; margin-top: 1rem;
-    }
+    .location-entry { display: flex; gap: 0.5rem; margin-top: 1rem; }
+    button { background-color: #003366; color: white; border: none; cursor: pointer; }
     button:hover { opacity: 0.9; }
-    .section { margin-top: 2rem; border-top: 1px solid #ccc; padding-top: 1rem; }
-    .location-entry { margin-bottom: 1rem; }
-    .small-button {
-      width: auto; margin-left: 0.5rem; padding: 0.3rem 0.8rem; font-size: 0.9rem;
-    }
   </style>
 </head>
 <body>
   <header>
-    <img src="./logo.png" alt="Bergwacht Logo" class="logo">
+    <img src="./logo.png" class="logo" alt="Bergwacht Logo" />
     <span style="font-size: 1.5rem; font-weight: bold;">Einsatzdetails</span>
   </header>
   <main>
     <h1 id="einsatzTitel">Einsatzübersicht</h1>
 
-    <div class="section">
-      <label>Ansprechpartner / Funkrufnamen</label>
-      <div id="funkrufContainer"></div>
-      <input type="text" id="neuerFunkruf" placeholder="z. B. EL BW" onkeypress="if(event.key==='Enter'){event.preventDefault();addFunkruf()}" />
-      <button onclick="addFunkruf()">Hinzufügen</button>
+    <label>Ansprechpartner / Funkrufnamen</label>
+    <div id="funkrufContainer"></div>
+    <input id="neuerFunkruf" placeholder="z. B. EL BW" />
+    <button onclick="addFunkruf()">Hinzufügen</button>
+
+    <label>Koordinaten & Standortinfos</label>
+    <div id="standortContainer"></div>
+    <div class="location-entry">
+      <input type="text" placeholder="Koordinate" class="koordInput" oninput="saveData()" />
+      <input type="text" placeholder="Standortinfo" class="infoInput" oninput="saveData()" />
+      <button onclick="addStandortField()">+</button>
     </div>
 
-    <div class="section">
-      <label>Koordinaten & Standortinfos</label>
-      <div id="standortContainer"></div>
-      <div class="location-entry">
-        <input type="text" placeholder="Koordinate (z. B. 48.2 8.7)" class="koordInput" />
-        <input type="text" placeholder="Standortbeschreibung (z. B. oberhalb Jägerpfad)" class="infoInput" />
-        <button class="small-button" onclick="addStandortField()">+</button>
-      </div>
-    </div>
+    <label>Funkkanäle</label>
+    <textarea id="funkkanaele" rows="3" placeholder="z. B. Kanal 4: EL, Kanal 1: Trupps"></textarea>
 
-    <div class="section">
-      <label>Funkkanäle</label>
-      <textarea id="funkkanaele" rows="3" placeholder="z. B. Kanal 4: EL, Kanal 1: Trupps"></textarea>
-    </div>
-
-    <div class="section">
-      <label>Sonstige Hinweise</label>
-      <textarea id="hinweise" rows="4" placeholder="z. B. Wetter, besondere Gefahren, Treffpunkt"></textarea>
-    </div>
+    <label>Hinweise</label>
+    <textarea id="hinweise" rows="4" placeholder="z. B. Gefahren, Treffpunkte, Wetter"></textarea>
 
     <button onclick="deleteEinsatzdaten()">Einsatzdaten löschen</button>
   </main>
