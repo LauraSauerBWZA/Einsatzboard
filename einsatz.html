@@ -42,7 +42,7 @@
           data.funkrufnamen.forEach(name => addFunkruf(name));
         }
         if (Array.isArray(data.standorte)) {
-          data.standorte.forEach(([koord, info]) => addStandortField(koord, info));
+          data.standorte.forEach(obj => addStandortField(obj.koord, obj.info));
         }
 
         document.getElementById("funkkanaele").value = data.funkkanaele || "";
@@ -56,10 +56,10 @@
       console.log("Speichere Daten...");
       try {
         const funkrufnamen = Array.from(document.querySelectorAll("#funkrufContainer div")).map(div => div.textContent);
-        const standorte = Array.from(document.querySelectorAll(".location-entry")).map(entry => [
-          entry.querySelector(".koordInput")?.value || "",
-          entry.querySelector(".infoInput")?.value || ""
-        ]);
+        const standorte = Array.from(document.querySelectorAll(".location-entry")).map(entry => ({
+          koord: entry.querySelector(".koordInput")?.value || "",
+          info: entry.querySelector(".infoInput")?.value || ""
+        }));
         const funkkanaele = document.getElementById("funkkanaele").value;
         const hinweise = document.getElementById("hinweise").value;
 
