@@ -22,12 +22,12 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const einsatzId = urlParams.get("einsatz") || "demo";
+    const einsatzRef = doc(db, "einsaetze", einsatzId);
+
     document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("einsatzTitel").textContent = `Einsatz: ${einsatzId}`;
       loadData();
     });
-
-    const einsatzRef = doc(db, "einsaetze", einsatzId);
 
     async function loadData() {
       const snapshot = await getDoc(einsatzRef);
@@ -79,24 +79,28 @@
       wrapper.innerHTML = `
         <input type="text" placeholder="Koordinate" class="koordInput" value="${koord}" />
         <input type="text" placeholder="Standortbeschreibung" class="infoInput" value="${info}" />
+        <button class="small-button" onclick="copyKoord(this)">Kopieren</button>
         <button class="small-button" onclick="this.parentElement.remove(); saveData();">Löschen</button>
       `;
       container.appendChild(wrapper);
 
       wrapper.querySelector(".koordInput").addEventListener("input", saveData);
       wrapper.querySelector(".infoInput").addEventListener("input", saveData);
+
+      saveData();
+    }
+
+    window.copyKoord = function(button) {
+      const koord = button.parentElement.querySelector(".koordInput").value;
+      navigator.clipboard.writeText(koord).then(() => {
+        button.textContent = "✓";
+        setTimeout(() => button.textContent = "Kopieren", 1500);
+      });
     }
 
     document.addEventListener("input", (e) => {
       if (["funkkanaele", "hinweise"].includes(e.target.id)) {
         saveData();
-      }
-    });
-
-    document.getElementById("neuerFunkruf").addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        addFunkruf();
       }
     });
 
@@ -118,7 +122,7 @@
       width: 100%; padding: 0.8rem; margin-top: 0.5rem; font-size: 1rem;
     }
     button {
-      background-color: #003366; color: white; border: none; cursor: pointer; margin-top: 2rem;
+      background-color: #003366; color: white; border: none; cursor: pointer; margin-top: 1rem;
     }
     button:hover { opacity: 0.9; }
     .section { margin-top: 2rem; border-top: 1px solid #ccc; padding-top: 1rem; }
@@ -130,7 +134,7 @@
 </head>
 <body>
   <header>
-    <img src="logo.png" alt="Bergwacht Logo" class="logo">
+    <img src="./logo.png" alt="Bergwacht Logo" class="logo">
     <span style="font-size: 1.5rem; font-weight: bold;">Einsatzdetails</span>
   </header>
   <main>
@@ -139,7 +143,7 @@
     <div class="section">
       <label>Ansprechpartner / Funkrufnamen</label>
       <div id="funkrufContainer"></div>
-      <input type="text" id="neuerFunkruf" placeholder="z. B. EL BW" />
+      <input type="text" id="neuerFunkruf" placeholder="z. B. EL BW" onkeypress="if(event.key==='Enter'){event.preventDefault();addFunkruf()}" />
       <button onclick="addFunkruf()">Hinzufügen</button>
     </div>
 
@@ -147,8 +151,8 @@
       <label>Koordinaten & Standortinfos</label>
       <div id="standortContainer"></div>
       <div class="location-entry">
-        <input type="text" placeholder="Koordinate (z. B. 48.2 8.7)" class="koordInput" oninput="saveData()" />
-        <input type="text" placeholder="Standortbeschreibung (z. B. oberhalb Jägerpfad)" class="infoInput" oninput="saveData()" />
+        <input type="text" placeholder="Koordinate (z. B. 48.2 8.7)" class="koordInput" />
+        <input type="text" placeholder="Standortbeschreibung (z. B. oberhalb Jägerpfad)" class="infoInput" />
         <button class="small-button" onclick="addStandortField()">+</button>
       </div>
     </div>
