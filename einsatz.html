@@ -35,7 +35,7 @@
 </head>
 <body>
   <header>
-    <img src="./logo.png" alt="Bergwacht Logo" class="logo">
+    <img src="logo.png" alt="Bergwacht Logo" class="logo">
     <span style="font-size: 1.5rem; font-weight: bold;">Einsatzdaten</span>
   </header>
   <main>
@@ -104,7 +104,7 @@
 
     function renderData() {
       db.ref(`einsaetze/${einsatz}/ansprechpartner`).on("value", snapshot => {
-        const list = snapshot.val();
+        const list = snapshot.val() || {};
         const container = document.getElementById("ansprechpartnerDisplay");
         container.innerHTML = "";
         for (let key in list) {
@@ -115,7 +115,7 @@
       });
 
       db.ref(`einsaetze/${einsatz}/funkkanaele`).on("value", snapshot => {
-        const list = snapshot.val();
+        const list = snapshot.val() || {};
         const container = document.getElementById("funkkanalDisplay");
         container.innerHTML = "";
         for (let key in list) {
@@ -126,7 +126,7 @@
       });
 
       db.ref(`einsaetze/${einsatz}/hinweise`).on("value", snapshot => {
-        const list = snapshot.val();
+        const list = snapshot.val() || {};
         const container = document.getElementById("hinweisDisplay");
         container.innerHTML = "";
         for (let key in list) {
@@ -137,7 +137,7 @@
       });
 
       db.ref(`einsaetze/${einsatz}/koordinaten`).on("value", snapshot => {
-        const list = snapshot.val();
+        const list = snapshot.val() || {};
         const container = document.getElementById("koordDisplay");
         container.innerHTML = "";
         for (let key in list) {
