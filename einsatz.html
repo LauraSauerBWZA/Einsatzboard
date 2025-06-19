@@ -4,64 +4,116 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Einsatzdetails – Bergwacht Einsatzboard</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC09wlAw-fzzThLjRoS_z_NSFvYB2TP5Bc",
+      authDomain: "einsatzboard.firebaseapp.com",
+      projectId: "einsatzboard",
+      storageBucket: "einsatzboard.firebasestorage.app",
+      messagingSenderId: "275404072041",
+      appId: "1:275404072041:web:e6123fc9c5632cf2652ef8"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const einsatzId = urlParams.get("einsatz") || "demo";
+    document.getElementById("einsatzTitel").textContent = `Einsatz: ${einsatzId}`;
+
+    const einsatzRef = doc(db, "einsaetze", einsatzId);
+
+    async function loadData() {
+      const snapshot = await getDoc(einsatzRef);
+      if (!snapshot.exists()) return;
+      const data = snapshot.data();
+
+      // Ansprechpartner/Funkrufnamen
+      if (Array.isArray(data.funkrufnamen)) {
+        data.funkrufnamen.forEach(name => addFunkruf(name));
+      }
+
+      // Koordinatenfelder
+      if (Array.isArray(data.standorte)) {
+        data.standorte.forEach(([koord, info]) => addStandortField(koord, info));
+      }
+
+      // Freitext
+      document.getElementById("funkkanaele").value = data.funkkanaele || "";
+      document.getElementById("hinweise").value = data.hinweise || "";
+    }
+
+    async function saveData() {
+      const funkrufnamen = Array.from(document.querySelectorAll("#funkrufContainer div")).map(div => div.textContent);
+      const standorte = Array.from(document.querySelectorAll(".location-entry")).map(entry => [
+        entry.querySelector(".koordInput")?.value || "",
+        entry.querySelector(".infoInput")?.value || ""
+      ]);
+      const funkkanaele = document.getElementById("funkkanaele").value;
+      const hinweise = document.getElementById("hinweise").value;
+
+      await setDoc(einsatzRef, {
+        funkrufnamen,
+        standorte,
+        funkkanaele,
+        hinweise
+      });
+    }
+
+    window.addFunkruf = function(value = "") {
+      const container = document.getElementById("funkrufContainer");
+      const div = document.createElement("div");
+      div.textContent = value || document.getElementById("neuerFunkruf").value;
+      if (!div.textContent.trim()) return;
+      container.appendChild(div);
+      document.getElementById("neuerFunkruf").value = "";
+      saveData();
+    }
+
+    window.addStandortField = function(koord = "", info = "") {
+      const container = document.getElementById("standortContainer");
+      const wrapper = document.createElement("div");
+      wrapper.classList.add("location-entry");
+      wrapper.innerHTML = `
+        <input type="text" placeholder="Koordinate" class="koordInput" value="${koord}" />
+        <input type="text" placeholder="Standortbeschreibung" class="infoInput" value="${info}" />
+        <button class="small-button" onclick="this.parentElement.remove(); saveData();">Löschen</button>
+      `;
+      container.appendChild(wrapper);
+      saveData();
+    }
+
+    document.addEventListener("DOMContentLoaded", loadData);
+    document.getElementById("funkkanaele").addEventListener("input", saveData);
+    document.getElementById("hinweise").addEventListener("input", saveData);
+    window.deleteEinsatzdaten = async function() {
+      if (confirm("Möchtest du diesen Einsatz wirklich zurücksetzen?")) {
+        await setDoc(einsatzRef, {});
+        location.reload();
+      }
+    }
+  </script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f9f9f9;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background-color: #003366;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-    }
-    .logo {
-      height: 40px;
-      vertical-align: middle;
-      margin-right: 10px;
-    }
-    main {
-      padding: 2rem;
-    }
-    h1 {
-      color: #003366;
-    }
-    label {
-      display: block;
-      margin-top: 1rem;
-      font-weight: bold;
-    }
+    body { font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0; }
+    header { background-color: #003366; color: white; padding: 1rem; text-align: center; }
+    .logo { height: 40px; vertical-align: middle; margin-right: 10px; }
+    main { padding: 2rem; }
+    h1 { color: #003366; }
+    label { display: block; margin-top: 1rem; font-weight: bold; }
     input, button, textarea {
-      width: 100%;
-      padding: 0.8rem;
-      margin-top: 0.5rem;
-      font-size: 1rem;
+      width: 100%; padding: 0.8rem; margin-top: 0.5rem; font-size: 1rem;
     }
     button {
-      background-color: #003366;
-      color: white;
-      border: none;
-      cursor: pointer;
-      margin-top: 2rem;
+      background-color: #003366; color: white; border: none; cursor: pointer; margin-top: 2rem;
     }
-    button:hover {
-      opacity: 0.9;
-    }
-    .section {
-      margin-top: 2rem;
-      border-top: 1px solid #ccc;
-      padding-top: 1rem;
-    }
-    .location-entry {
-      margin-bottom: 1rem;
-    }
+    button:hover { opacity: 0.9; }
+    .section { margin-top: 2rem; border-top: 1px solid #ccc; padding-top: 1rem; }
+    .location-entry { margin-bottom: 1rem; }
     .small-button {
-      width: auto;
-      margin-left: 0.5rem;
-      padding: 0.3rem 0.8rem;
-      font-size: 0.9rem;
+      width: auto; margin-left: 0.5rem; padding: 0.3rem 0.8rem; font-size: 0.9rem;
     }
   </style>
 </head>
@@ -102,46 +154,5 @@
 
     <button onclick="deleteEinsatzdaten()">Einsatzdaten löschen</button>
   </main>
-
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const einsatzId = params.get("einsatz");
-    const gespeichertePIN = localStorage.getItem(einsatzId + "_pin");
-
-    if (!einsatzId || !gespeichertePIN) {
-      alert("Kein gültiger Einsatz ausgewählt oder PIN nicht vorhanden.");
-      location.href = "index.html";
-    }
-
-    document.getElementById("einsatzTitel").textContent = `Einsatz: ${einsatzId}`;
-
-    function addFunkruf() {
-      const input = document.getElementById("neuerFunkruf");
-      if (input.value.trim() === "") return;
-      const div = document.createElement("div");
-      div.textContent = input.value.trim();
-      document.getElementById("funkrufContainer").appendChild(div);
-      input.value = "";
-    }
-
-    function addStandortField() {
-      const container = document.getElementById("standortContainer");
-      const wrapper = document.createElement("div");
-      wrapper.classList.add("location-entry");
-      wrapper.innerHTML = `
-        <input type="text" placeholder="Koordinate (z. B. 48.2 8.7)" class="koordInput" />
-        <input type="text" placeholder="Standortbeschreibung" class="infoInput" />
-        <button class="small-button" onclick="this.parentElement.remove()">Löschen</button>
-      `;
-      container.appendChild(wrapper);
-    }
-
-    function deleteEinsatzdaten() {
-      if (confirm("Möchtest du alle Daten dieses Einsatzes wirklich löschen?")) {
-        localStorage.removeItem(einsatzId + "_pin");
-        location.href = "index.html";
-      }
-    }
-  </script>
 </body>
 </html>
