@@ -3,102 +3,152 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Einsatzbearbeitung – Bergwacht</title>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+  <title>Einsatzdaten – Bergwacht</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; background-color: #f0f4f8; padding: 1rem; }
-    header { background-color: #003366; color: white; padding: 1rem; text-align: center; }
+    body { font-family: Arial, sans-serif; background-color: #f0f4f8; margin: 0; padding: 0; text-align: center; }
+    header { background-color: #003366; color: white; padding: 1rem; }
     .logo { height: 40px; vertical-align: middle; margin-right: 10px; }
-    .section { margin-bottom: 2rem; padding: 1rem; background: #ffffff; border-radius: 5px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
-    h2 { color: #003366; margin-bottom: 0.5rem; }
-    input, textarea { width: 100%; padding: 0.5rem; margin-top: 0.5rem; margin-bottom: 1rem; font-size: 1rem; border: 1px solid #ccc; border-radius: 4px; }
-    input.highlight, textarea.highlight { background-color: #fffbe6; }
-    .eintrag-box { background: #e6f0ff; padding: 0.75rem; margin-bottom: 0.5rem; border-left: 4px solid #003366; border-radius: 4px; }
-    button { background-color: #003366; color: white; padding: 0.6rem 1rem; border: none; border-radius: 4px; cursor: pointer; }
-    button:hover { background-color: #002244; }
+    main { padding: 2rem; }
+    input, button {
+      padding: 0.8rem; font-size: 1rem; margin: 0.5rem auto; width: 80%; max-width: 500px;
+    }
+    input {
+      background-color: #ffffff; border: 2px solid #cccccc; border-radius: 4px;
+    }
+    button {
+      background-color: #003366; color: white; border: none; cursor: pointer; border-radius: 4px;
+    }
+    button:hover { opacity: 0.9; }
+    .field-container {
+      margin: 1rem auto; max-width: 600px; background: #ffffff; border: 2px solid #e0e0e0; padding: 1rem; border-radius: 4px;
+    }
+    .existing-data {
+      background-color: #e6f7ff;
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 4px;
+      border: 1px solid #b3d8ff;
+    }
   </style>
 </head>
 <body>
   <header>
     <img src="./logo.png" alt="Bergwacht Logo" class="logo">
-    <span style="font-size: 1.5rem; font-weight: bold;">Einsatz bearbeiten</span>
+    <span style="font-size: 1.5rem; font-weight: bold;">Einsatzdaten</span>
   </header>
   <main>
-    <div class="section">
-      <h2>Ansprechpartner / Funkrufname</h2>
-      <input id="funkrufInput" class="highlight" placeholder="z. B. EL BW, EL DRK" />
-      <div id="funkrufList"></div>
+    <div class="field-container">
+      <input type="text" id="ansprechpartner" placeholder="Ansprechpartner / Funkrufname">
+      <button onclick="saveData('ansprechpartner')">Speichern</button>
+      <div id="ansprechpartnerDisplay" class="existing-data"></div>
     </div>
 
-    <div class="section">
-      <h2>Koordinaten / Standorte</h2>
-      <input id="koordInput" class="highlight" placeholder="Koordinaten eingeben" />
-      <textarea id="koordInfoInput" class="highlight" placeholder="Zusätzliche Info zum Standort"></textarea>
-      <div id="koordList"></div>
+    <div class="field-container">
+      <input type="text" id="funkkanal" placeholder="Funkkanal z. B. 421.2125 MHz">
+      <button onclick="saveData('funkkanal')">Funkkanal speichern</button>
+      <div id="funkkanalDisplay" class="existing-data"></div>
+    </div>
+
+    <div class="field-container">
+      <input type="text" id="hinweis" placeholder="Besondere Hinweise (Wetter, Gelände usw.)">
+      <button onclick="saveData('hinweis')">Hinweis speichern</button>
+      <div id="hinweisDisplay" class="existing-data"></div>
+    </div>
+
+    <div class="field-container">
+      <input type="text" id="koord" placeholder="Koordinaten z. B. Apfel.Baum.Zelt">
+      <input type="text" id="koordInfo" placeholder="Info zur Koordinate">
+      <button onclick="saveData('koordinaten')">Koordinate speichern</button>
+      <div id="koordDisplay" class="existing-data"></div>
     </div>
   </main>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getDatabase, ref, push, onValue, set } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
-
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyC09wlAw-fzzThLjRoS_z_NSFvYB2TP5Bc",
       authDomain: "einsatzboard.firebaseapp.com",
+      databaseURL: "https://einsatzboard-default-rtdb.europe-west1.firebasedatabase.app",
       projectId: "einsatzboard",
       storageBucket: "einsatzboard.appspot.com",
       messagingSenderId: "275404072041",
-      appId: "1:275404072041:web:e6123fc9c5632cf2652ef8",
-      databaseURL: "https://einsatzboard-default-rtdb.europe-west1.firebasedatabase.app"
+      appId: "1:275404072041:web:e6123fc9c5632cf2652ef8"
     };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
     const urlParams = new URLSearchParams(window.location.search);
-    const einsatz = urlParams.get("einsatz") || "default";
+    const einsatz = urlParams.get("einsatz");
+    if (!einsatz) {
+      document.body.innerHTML = "<p style='padding:2rem;'>Kein gültiger Einsatz ausgewählt oder Parameter fehlt.</p>";
+      throw new Error("Kein Einsatzparameter");
+    }
 
-    const funkRef = ref(db, `einsaetze/${einsatz}/funkrufnamen`);
-    const koordRef = ref(db, `einsaetze/${einsatz}/koordinaten`);
-
-    document.getElementById("funkrufInput").addEventListener("keypress", e => {
-      if (e.key === "Enter") {
-        push(funkRef, e.target.value);
-        e.target.value = "";
+    function saveData(type) {
+      if (type === 'ansprechpartner') {
+        const val = document.getElementById("ansprechpartner").value;
+        db.ref(`einsaetze/${einsatz}/ansprechpartner`).push(val);
+      } else if (type === 'funkkanal') {
+        const val = document.getElementById("funkkanal").value;
+        db.ref(`einsaetze/${einsatz}/funkkanaele`).push(val);
+      } else if (type === 'hinweis') {
+        const val = document.getElementById("hinweis").value;
+        db.ref(`einsaetze/${einsatz}/hinweise`).push(val);
+      } else if (type === 'koordinaten') {
+        const val = document.getElementById("koord").value;
+        const info = document.getElementById("koordInfo").value;
+        db.ref(`einsaetze/${einsatz}/koordinaten`).push({ ort: val, info });
       }
-    });
+    }
 
-    document.getElementById("koordInput").addEventListener("keypress", e => {
-      if (e.key === "Enter") {
-        const info = document.getElementById("koordInfoInput").value;
-        push(koordRef, { koordinaten: e.target.value, info });
-        e.target.value = "";
-        document.getElementById("koordInfoInput").value = "";
-      }
-    });
-
-    onValue(funkRef, snapshot => {
-      const list = document.getElementById("funkrufList");
-      list.innerHTML = "";
-      snapshot.forEach(child => {
-        const div = document.createElement("div");
-        div.className = "eintrag-box";
-        div.textContent = child.val();
-        list.appendChild(div);
+    function renderData() {
+      db.ref(`einsaetze/${einsatz}/ansprechpartner`).on("value", snapshot => {
+        const list = snapshot.val();
+        const container = document.getElementById("ansprechpartnerDisplay");
+        container.innerHTML = "";
+        for (let key in list) {
+          const div = document.createElement("div");
+          div.textContent = list[key];
+          container.appendChild(div);
+        }
       });
-    });
 
-    onValue(koordRef, snapshot => {
-      const list = document.getElementById("koordList");
-      list.innerHTML = "";
-      snapshot.forEach(child => {
-        const div = document.createElement("div");
-        div.className = "eintrag-box";
-        div.innerHTML = `<strong>${child.val().koordinaten}</strong><br>${child.val().info}`;
-        list.appendChild(div);
+      db.ref(`einsaetze/${einsatz}/funkkanaele`).on("value", snapshot => {
+        const list = snapshot.val();
+        const container = document.getElementById("funkkanalDisplay");
+        container.innerHTML = "";
+        for (let key in list) {
+          const div = document.createElement("div");
+          div.textContent = list[key];
+          container.appendChild(div);
+        }
       });
-    });
+
+      db.ref(`einsaetze/${einsatz}/hinweise`).on("value", snapshot => {
+        const list = snapshot.val();
+        const container = document.getElementById("hinweisDisplay");
+        container.innerHTML = "";
+        for (let key in list) {
+          const div = document.createElement("div");
+          div.textContent = list[key];
+          container.appendChild(div);
+        }
+      });
+
+      db.ref(`einsaetze/${einsatz}/koordinaten`).on("value", snapshot => {
+        const list = snapshot.val();
+        const container = document.getElementById("koordDisplay");
+        container.innerHTML = "";
+        for (let key in list) {
+          const div = document.createElement("div");
+          div.innerHTML = `<strong>${list[key].ort}</strong>: ${list[key].info}`;
+          container.appendChild(div);
+        }
+      });
+    }
+
+    renderData();
   </script>
 </body>
 </html>
