@@ -6,6 +6,7 @@
   <title>Einsatzboard – Bergwacht</title>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -114,6 +115,13 @@
       <input type="text" id="koordInfo" placeholder="Info zur Koordinate">
       <button onclick="saveData('koordinaten')">Koordinate speichern</button>
     </div>
+
+    <div class="field-container">
+      <h2>Bilder / Screenshots</h2>
+      <input type="file" id="imageUpload" accept="image/*">
+      <button onclick="uploadImage()">Bild hochladen</button>
+      <div id="uploadedImages"></div>
+    </div>
   </main>
 
   <script>
@@ -128,6 +136,7 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+    const storage = firebase.storage();
 
     const urlParams = new URLSearchParams(window.location.search);
     const einsatz = urlParams.get("einsatz");
@@ -165,6 +174,24 @@
     function deleteEntry(type, key) {
       const refPath = `einsaetze/${einsatz}/${type}/${key}`;
       db.ref(refPath).remove();
+    }
+
+    function uploadImage() {
+      const file = document.getElementById("imageUpload").files[0];
+      if (!file) return;
+
+      const fileName = `${Date.now()}_${file.name}`;
+      const storageRef = storage.ref(`einsaetze/${einsatz}/bilder/${fileName}`);
+
+      storageRef.put(file).then(snapshot => {
+        snapshot.ref.getDownloadURL().then(url => {
+          const img = document.createElement("img");
+          img.src = url;
+          img.style.maxWidth = "100%";
+          img.style.marginTop = "1rem";
+          document.getElementById("uploadedImages").appendChild(img);
+        });
+      });
     }
 
     function renderData() {
