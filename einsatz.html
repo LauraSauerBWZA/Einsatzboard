@@ -142,22 +142,19 @@
       if (type === 'koordinaten') {
         const ort = document.getElementById("koord").value.trim();
         const info = document.getElementById("koordInfo").value.trim();
-        if (!ort) return;
+        if (!ort && !info) return;
         value = { ort, info };
+        document.getElementById("koord").value = "";
+        document.getElementById("koordInfo").value = "";
       } else {
-        const input = document.getElementById(type).value.trim();
+        const inputEl = document.getElementById(type);
+        const input = inputEl.value.trim();
         if (!input) return;
         value = input;
+        inputEl.value = "";
       }
 
-      db.ref(refPath).push(value).then(() => {
-        if (type === 'koordinaten') {
-          document.getElementById("koord").value = "";
-          document.getElementById("koordInfo").value = "";
-        } else {
-          document.getElementById(type).value = "";
-        }
-      });
+      db.ref(refPath).push(value);
     }
 
     function deleteEntry(type, key) {
@@ -174,9 +171,9 @@
       ];
 
       sections.forEach(({ key, containerId, isCoord }) => {
+        const container = document.getElementById(containerId);
         db.ref(`einsaetze/${einsatz}/${key}`).on("value", snapshot => {
           const list = snapshot.val() || {};
-          const container = document.getElementById(containerId);
           container.innerHTML = "";
           for (let k in list) {
             const div = document.createElement("div");
@@ -194,7 +191,7 @@
       });
     }
 
-    document.addEventListener("DOMContentLoaded", () => renderData());
+    document.addEventListener("DOMContentLoaded", renderData);
   </script>
 </body>
 </html>
