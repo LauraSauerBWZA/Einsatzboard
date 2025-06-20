@@ -82,21 +82,21 @@
 <body>
   <header>
     <img src="logo.png" alt="Bergwacht Logo" class="logo">
-    <span style="font-size: 1.5rem; font-weight: bold;">Einsatzdaten – <span id="einsatzIdDisplay" style="color: #c10000;"></span></span>
+    <span style="font-size: 1.5rem; font-weight: bold;">Einsatzboard – <span id="einsatzIdDisplay" style="color: #c10000;"></span></span>
   </header>
   <main>
-    <div class="field-container">
-      <h2>Ansprechpartner / Funkrufnamen</h2>
-      <div id="ansprechpartnerDisplay"></div>
-      <input type="text" id="ansprechpartner" placeholder="Ansprechpartner / Funkrufname">
-      <button onclick="saveData('ansprechpartner')">Speichern</button>
-    </div>
-
     <div class="field-container">
       <h2>Funkkanäle</h2>
       <div id="funkkanalDisplay"></div>
       <input type="text" id="funkkanal" placeholder="Funkkanal z. B. 421.2125 MHz">
       <button onclick="saveData('funkkanal')">Funkkanal speichern</button>
+    </div>
+
+    <div class="field-container">
+      <h2>Ansprechpartner / Funkrufnamen</h2>
+      <div id="ansprechpartnerDisplay"></div>
+      <input type="text" id="ansprechpartner" placeholder="Ansprechpartner / Funkrufname">
+      <button onclick="saveData('ansprechpartner')">Speichern</button>
     </div>
 
     <div class="field-container">
@@ -168,8 +168,8 @@
 
     function renderData() {
       const sections = [
-        { key: 'ansprechpartner', containerId: 'ansprechpartnerDisplay' },
         { key: 'funkkanal', containerId: 'funkkanalDisplay' },
+        { key: 'ansprechpartner', containerId: 'ansprechpartnerDisplay' },
         { key: 'hinweis', containerId: 'hinweisDisplay' },
         { key: 'koordinaten', containerId: 'koordDisplay', isCoord: true }
       ];
