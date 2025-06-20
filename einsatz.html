@@ -144,26 +144,26 @@
         const info = document.getElementById("koordInfo").value.trim();
         if (!ort && !info) return;
         value = { ort, info };
-        db.ref(refPath).push(value).then(() => {
-          document.getElementById("koord").value = "";
-          document.getElementById("koordInfo").value = "";
-          renderData();
-        });
       } else {
         const inputEl = document.getElementById(type);
         const input = inputEl.value.trim();
         if (!input) return;
         value = input;
-        db.ref(refPath).push(value).then(() => {
-          inputEl.value = "";
-          renderData();
-        });
       }
+
+      db.ref(refPath).push(value).then(() => {
+        if (type === 'koordinaten') {
+          document.getElementById("koord").value = "";
+          document.getElementById("koordInfo").value = "";
+        } else {
+          document.getElementById(type).value = "";
+        }
+      });
     }
 
     function deleteEntry(type, key) {
       const refPath = `einsaetze/${einsatz}/${type}/${key}`;
-      db.ref(refPath).remove().then(() => renderData());
+      db.ref(refPath).remove();
     }
 
     function renderData() {
@@ -176,7 +176,7 @@
 
       sections.forEach(({ key, containerId, isCoord }) => {
         const container = document.getElementById(containerId);
-        db.ref(`einsaetze/${einsatz}/${key}`).once("value").then(snapshot => {
+        db.ref(`einsaetze/${einsatz}/${key}`).on("value", snapshot => {
           const list = snapshot.val() || {};
           container.innerHTML = "";
           for (let k in list) {
@@ -195,7 +195,7 @@
       });
     }
 
-    document.addEventListener("DOMContentLoaded", renderData);
+    renderData();
   </script>
 </body>
 </html>
