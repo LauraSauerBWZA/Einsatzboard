@@ -135,31 +135,36 @@
       throw new Error("Kein Einsatzparameter");
     }
 
-    function saveData(type) {
-      const refPath = `einsaetze/${einsatz}/${type}`;
-      let value;
+function saveData(type) {
+  const refPath = `einsaetze/${einsatz}/${type}`;
+  let value;
 
+  if (type === 'koordinaten') {
+    const ort = document.getElementById("koord").value.trim();
+    const info = document.getElementById("koordInfo").value.trim();
+    if (!ort && !info) return;
+    value = { ort, info };
+  } else {
+    const inputEl = document.getElementById(type);
+    const input = inputEl.value.trim();
+    if (!input) return;
+    value = input;
+  }
+
+  db.ref(refPath).push(value)
+    .then(() => {
       if (type === 'koordinaten') {
-        const ort = document.getElementById("koord").value.trim();
-        const info = document.getElementById("koordInfo").value.trim();
-        if (!ort && !info) return;
-        value = { ort, info };
+        document.getElementById("koord").value = "";
+        document.getElementById("koordInfo").value = "";
       } else {
-        const inputEl = document.getElementById(type);
-        const input = inputEl.value.trim();
-        if (!input) return;
-        value = input;
+        document.getElementById(type).value = "";
       }
-
-      db.ref(refPath).push(value).then(() => {
-        if (type === 'koordinaten') {
-          document.getElementById("koord").value = "";
-          document.getElementById("koordInfo").value = "";
-        } else {
-          document.getElementById(type).value = "";
-        }
-      });
-    }
+    })
+    .catch((error) => {
+      console.error("Fehler beim Speichern in Firebase:", error);
+      alert("Daten konnten nicht gespeichert werden.");
+    });
+}
 
     function deleteEntry(type, key) {
       const refPath = `einsaetze/${einsatz}/${type}/${key}`;
