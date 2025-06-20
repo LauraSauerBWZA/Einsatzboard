@@ -151,7 +151,6 @@
       }
 
       db.ref(refPath).push(value).then(() => {
-        renderData();
         if (type === 'koordinaten') {
           document.getElementById("koord").value = "";
           document.getElementById("koordInfo").value = "";
@@ -195,7 +194,7 @@
       });
     }
 
-    renderData();
+    document.addEventListener("DOMContentLoaded", () => renderData());
   </script>
 </body>
 </html>
