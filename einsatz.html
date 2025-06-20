@@ -45,12 +45,13 @@
       border: none;
       cursor: pointer;
       border-radius: 4px;
+      margin: 0.2rem;
     }
     button:hover {
       opacity: 0.9;
     }
     .field-container {
-      margin: 1rem auto;
+      margin: 2rem auto;
       max-width: 600px;
       background: #ffffff;
       border: 2px solid #e0e0e0;
@@ -58,15 +59,19 @@
       border-radius: 4px;
     }
     .existing-data {
-      background-color: #e6f7ff;
-      margin-top: 1rem;
-      padding: 1rem;
-      border-radius: 4px;
-      border: 1px solid #b3d8ff;
-    }
-    .entry {
+      background-color: #e0ffe0;
+      margin-bottom: 1rem;
       padding: 0.5rem;
-      border-bottom: 1px solid #ddd;
+      border-radius: 4px;
+      border: 1px solid #66cc66;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .entry-buttons button {
+      background-color: #666;
+      font-size: 0.8rem;
+      padding: 0.4rem 0.6rem;
     }
   </style>
 </head>
@@ -77,28 +82,28 @@
   </header>
   <main>
     <div class="field-container">
+      <div id="ansprechpartnerDisplay"></div>
       <input type="text" id="ansprechpartner" placeholder="Ansprechpartner / Funkrufname">
       <button onclick="saveData('ansprechpartner')">Speichern</button>
-      <div id="ansprechpartnerDisplay" class="existing-data"></div>
     </div>
 
     <div class="field-container">
+      <div id="funkkanalDisplay"></div>
       <input type="text" id="funkkanal" placeholder="Funkkanal z. B. 421.2125 MHz">
       <button onclick="saveData('funkkanal')">Funkkanal speichern</button>
-      <div id="funkkanalDisplay" class="existing-data"></div>
     </div>
 
     <div class="field-container">
+      <div id="hinweisDisplay"></div>
       <input type="text" id="hinweis" placeholder="Besondere Hinweise (Wetter, Gelände usw.)">
       <button onclick="saveData('hinweis')">Hinweis speichern</button>
-      <div id="hinweisDisplay" class="existing-data"></div>
     </div>
 
     <div class="field-container">
+      <div id="koordDisplay"></div>
       <input type="text" id="koord" placeholder="Koordinaten z. B. Apfel.Baum.Zelt">
       <input type="text" id="koordInfo" placeholder="Info zur Koordinate">
       <button onclick="saveData('koordinaten')">Koordinate speichern</button>
-      <div id="koordDisplay" class="existing-data"></div>
     </div>
   </main>
 
@@ -148,6 +153,11 @@
       });
     }
 
+    function deleteEntry(type, key) {
+      const refPath = `einsaetze/${einsatz}/${type}/${key}`;
+      db.ref(refPath).remove();
+    }
+
     function renderData() {
       const sections = [
         { key: 'ansprechpartner', containerId: 'ansprechpartnerDisplay' },
@@ -163,13 +173,14 @@
           container.innerHTML = "";
           for (let k in list) {
             const div = document.createElement("div");
-            div.classList.add("entry");
-            if (isCoord) {
-              const coord = list[k];
-              div.innerHTML = `<strong>${coord.ort}</strong>: ${coord.info}`;
-            } else {
-              div.textContent = list[k];
-            }
+            div.className = "existing-data";
+            const text = isCoord
+              ? `<strong>${list[k].ort}</strong>: ${list[k].info}`
+              : list[k];
+            div.innerHTML = `<span>${text}</span>
+              <span class='entry-buttons'>
+                <button onclick="deleteEntry('${key}', '${k}')">Löschen</button>
+              </span>`;
             container.appendChild(div);
           }
         });
