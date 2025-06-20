@@ -144,17 +144,19 @@
         const info = document.getElementById("koordInfo").value.trim();
         if (!ort && !info) return;
         value = { ort, info };
-        document.getElementById("koord").value = "";
-        document.getElementById("koordInfo").value = "";
+        db.ref(refPath).push(value).then(() => {
+          document.getElementById("koord").value = "";
+          document.getElementById("koordInfo").value = "";
+        });
       } else {
         const inputEl = document.getElementById(type);
         const input = inputEl.value.trim();
         if (!input) return;
         value = input;
-        inputEl.value = "";
+        db.ref(refPath).push(value).then(() => {
+          inputEl.value = "";
+        });
       }
-
-      db.ref(refPath).push(value);
     }
 
     function deleteEntry(type, key) {
