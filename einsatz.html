@@ -73,6 +73,10 @@
       font-size: 0.8rem;
       padding: 0.4rem 0.6rem;
     }
+    h2 {
+      color: #003366;
+      margin-top: 0;
+    }
   </style>
 </head>
 <body>
@@ -82,24 +86,28 @@
   </header>
   <main>
     <div class="field-container">
+      <h2>Ansprechpartner / Funkrufnamen</h2>
       <div id="ansprechpartnerDisplay"></div>
       <input type="text" id="ansprechpartner" placeholder="Ansprechpartner / Funkrufname">
       <button onclick="saveData('ansprechpartner')">Speichern</button>
     </div>
 
     <div class="field-container">
+      <h2>Funkkanäle</h2>
       <div id="funkkanalDisplay"></div>
       <input type="text" id="funkkanal" placeholder="Funkkanal z. B. 421.2125 MHz">
       <button onclick="saveData('funkkanal')">Funkkanal speichern</button>
     </div>
 
     <div class="field-container">
+      <h2>Hinweise</h2>
       <div id="hinweisDisplay"></div>
       <input type="text" id="hinweis" placeholder="Besondere Hinweise (Wetter, Gelände usw.)">
       <button onclick="saveData('hinweis')">Hinweis speichern</button>
     </div>
 
     <div class="field-container">
+      <h2>Koordinaten</h2>
       <div id="koordDisplay"></div>
       <input type="text" id="koord" placeholder="Koordinaten z. B. Apfel.Baum.Zelt">
       <input type="text" id="koordInfo" placeholder="Info zur Koordinate">
