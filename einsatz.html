@@ -163,9 +163,7 @@
 
     function deleteEntry(type, key) {
       const refPath = `einsaetze/${einsatz}/${type}/${key}`;
-      db.ref(refPath).remove().then(() => {
-        renderData();
-      });
+      db.ref(refPath).remove().then(() => renderData());
     }
 
     function renderData() {
