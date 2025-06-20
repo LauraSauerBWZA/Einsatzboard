@@ -147,6 +147,7 @@
         db.ref(refPath).push(value).then(() => {
           document.getElementById("koord").value = "";
           document.getElementById("koordInfo").value = "";
+          renderData();
         });
       } else {
         const inputEl = document.getElementById(type);
@@ -155,13 +156,16 @@
         value = input;
         db.ref(refPath).push(value).then(() => {
           inputEl.value = "";
+          renderData();
         });
       }
     }
 
     function deleteEntry(type, key) {
       const refPath = `einsaetze/${einsatz}/${type}/${key}`;
-      db.ref(refPath).remove();
+      db.ref(refPath).remove().then(() => {
+        renderData();
+      });
     }
 
     function renderData() {
@@ -174,7 +178,7 @@
 
       sections.forEach(({ key, containerId, isCoord }) => {
         const container = document.getElementById(containerId);
-        db.ref(`einsaetze/${einsatz}/${key}`).on("value", snapshot => {
+        db.ref(`einsaetze/${einsatz}/${key}`).once("value").then(snapshot => {
           const list = snapshot.val() || {};
           container.innerHTML = "";
           for (let k in list) {
