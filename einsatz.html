@@ -106,6 +106,10 @@
       padding: 2px 4px;
       cursor: pointer;
     }
+    .caption {
+      font-size: 0.8rem;
+      margin-top: 2px;
+    }
   </style>
 </head>
 <body>
@@ -146,6 +150,7 @@
     <div class="field-container">
       <h2>Bilder vom Einsatz</h2>
       <input type="file" id="imageInput" accept="image/*">
+      <input type="text" id="imageCaption" placeholder="Bildtitel eingeben">
       <button onclick="uploadImage()">Bild hochladen</button>
       <div class="gallery" id="gallery"></div>
     </div>
@@ -233,15 +238,19 @@
 
     function uploadImage() {
       const file = document.getElementById('imageInput').files[0];
-      if (!file) return alert('Bitte ein Bild auswählen.');
+      const caption = document.getElementById('imageCaption').value.trim();
+      if (!file || !caption) return alert('Bitte ein Bild UND Titel angeben.');
 
       const reader = new FileReader();
       reader.onload = function(e) {
         const base64Image = e.target.result;
         const timestamp = Date.now();
-        db.ref(`einsaetze/${einsatz}/bilder/${timestamp}`).set(base64Image)
+        const time = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const entry = { data: base64Image, title: `${caption} (${time})` };
+        db.ref(`einsaetze/${einsatz}/bilder/${timestamp}`).set(entry)
           .then(() => {
-            alert('Bild erfolgreich hochgeladen!');
+            document.getElementById('imageInput').value = "";
+            document.getElementById('imageCaption').value = "";
             loadGallery();
           })
           .catch(error => alert('Fehler: ' + error));
@@ -269,11 +278,14 @@
         galleryDiv.innerHTML = '';
         const images = snapshot.val();
         if (images) {
-          Object.entries(images).forEach(([key, data]) => {
+          Object.entries(images).forEach(([key, { data, title }]) => {
             const wrapper = document.createElement('div');
             wrapper.className = 'gallery-item';
             const img = document.createElement('img');
             img.src = data;
+            const caption = document.createElement('div');
+            caption.className = 'caption';
+            caption.textContent = title || 'Ohne Titel';
             const buttons = document.createElement('div');
             buttons.className = 'image-buttons';
             buttons.innerHTML = `
@@ -281,6 +293,7 @@
               <button onclick="downloadBase64('${data}')">⬇️</button>
             `;
             wrapper.appendChild(img);
+            wrapper.appendChild(caption);
             wrapper.appendChild(buttons);
             galleryDiv.appendChild(wrapper);
           });
