@@ -78,11 +78,33 @@
       color: #003366;
       margin-top: 0;
     }
+    .gallery-item {
+      position: relative;
+      display: inline-block;
+      margin: 5px;
+    }
     .gallery img {
       height: 120px;
-      margin: 5px;
       border-radius: 6px;
       box-shadow: 0 0 5px #aaa;
+    }
+    .image-buttons {
+      position: absolute;
+      bottom: 4px;
+      left: 4px;
+      right: 4px;
+      display: flex;
+      justify-content: space-between;
+      background-color: rgba(0,0,0,0.5);
+      border-radius: 4px;
+    }
+    .image-buttons button {
+      background-color: rgba(255,255,255,0.8);
+      color: black;
+      font-size: 0.7rem;
+      border: none;
+      padding: 2px 4px;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -227,16 +249,31 @@
       reader.readAsDataURL(file);
     }
 
+    function deleteImage(key) {
+      db.ref(`einsaetze/${einsatz}/bilder/${key}`).remove()
+        .then(() => loadGallery());
+    }
+
     function loadGallery() {
       db.ref(`einsaetze/${einsatz}/bilder`).once('value', snapshot => {
         const galleryDiv = document.getElementById('gallery');
         galleryDiv.innerHTML = '';
         const images = snapshot.val();
         if (images) {
-          Object.values(images).forEach(imgData => {
+          Object.entries(images).forEach(([key, data]) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'gallery-item';
             const img = document.createElement('img');
-            img.src = imgData;
-            galleryDiv.appendChild(img);
+            img.src = data;
+            const buttons = document.createElement('div');
+            buttons.className = 'image-buttons';
+            buttons.innerHTML = `
+              <button onclick="deleteImage('${key}')">🗑</button>
+              <button onclick="window.open('${data}', '_blank')">⬇️</button>
+            `;
+            wrapper.appendChild(img);
+            wrapper.appendChild(buttons);
+            galleryDiv.appendChild(wrapper);
           });
         }
       });
