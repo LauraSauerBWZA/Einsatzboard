@@ -60,21 +60,6 @@
       border-radius: 6px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
-    .existing-data {
-      background-color: #fbeaea;
-      margin-bottom: 1rem;
-      padding: 0.5rem;
-      border-radius: 4px;
-      border: 1px solid #c10000;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .entry-buttons button {
-      background-color: #666;
-      font-size: 0.8rem;
-      padding: 0.4rem 0.6rem;
-    }
     h2 {
       color: #003366;
       margin-top: 0;
@@ -102,10 +87,14 @@
       margin-top: 6px;
       text-align: center;
       font-weight: bold;
+      background-color: #ffffffdd;
+      padding: 2px 6px;
+      border-radius: 4px;
+      max-width: 90%;
     }
     .image-buttons {
       position: absolute;
-      bottom: 4px;
+      top: 4px;
       left: 4px;
       right: 4px;
       display: flex;
@@ -131,19 +120,23 @@
     <div class="field-container">
       <h2>Funkkanäle</h2>
       <input id="funkkanal" placeholder="Funkkanal eingeben">
+      <button onclick="saveText('funkkanal')">Speichern</button>
     </div>
     <div class="field-container">
       <h2>Ansprechpartner / Funkrufnamen</h2>
       <input id="funkrufname" placeholder="Funkrufname eingeben">
+      <button onclick="saveText('funkrufname')">Speichern</button>
     </div>
     <div class="field-container">
       <h2>Hinweise</h2>
       <input id="hinweise" placeholder="Hinweise eingeben">
+      <button onclick="saveText('hinweise')">Speichern</button>
     </div>
     <div class="field-container">
       <h2>Koordinaten</h2>
       <input id="koord" placeholder="z. B. Apfel.Baum.Zelt">
       <input id="koordInfo" placeholder="Beschreibung zur Koordinate">
+      <button onclick="saveKoordinaten()">Koordinaten speichern</button>
     </div>
     <div class="field-container">
       <h2>Bilder vom Einsatz</h2>
@@ -153,7 +146,6 @@
       <div class="gallery" id="gallery"></div>
     </div>
   </main>
-
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyC09wlAw-fzzThLjRoS_z_NSFvYB2TP5Bc",
@@ -166,8 +158,23 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-
     const einsatz = "demo";
+
+    function saveText(fieldId) {
+      const value = document.getElementById(fieldId).value.trim();
+      if (!value) return;
+      db.ref(`einsaetze/${einsatz}/${fieldId}`).push(value);
+      document.getElementById(fieldId).value = "";
+    }
+
+    function saveKoordinaten() {
+      const ort = document.getElementById("koord").value.trim();
+      const info = document.getElementById("koordInfo").value.trim();
+      if (!ort && !info) return;
+      db.ref(`einsaetze/${einsatz}/koordinaten`).push({ ort, info });
+      document.getElementById("koord").value = "";
+      document.getElementById("koordInfo").value = "";
+    }
 
     function uploadImage() {
       const fileInput = document.getElementById("imageUpload");
@@ -218,10 +225,6 @@
           const img = document.createElement("img");
           img.src = val.data;
 
-          const caption = document.createElement("div");
-          caption.className = "caption";
-          caption.textContent = val.title;
-
           const buttons = document.createElement("div");
           buttons.className = "image-buttons";
           buttons.innerHTML = `
@@ -229,9 +232,13 @@
             <button onclick="downloadImage('${val.data}')">⬇️</button>
           `;
 
+          const caption = document.createElement("div");
+          caption.className = "caption";
+          caption.textContent = val.title;
+
+          wrapper.appendChild(buttons);
           wrapper.appendChild(img);
           wrapper.appendChild(caption);
-          wrapper.appendChild(buttons);
           gallery.appendChild(wrapper);
         });
       });
