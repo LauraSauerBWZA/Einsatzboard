@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Einsatzboard – Bergwacht</title>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <style>
     body {
@@ -78,15 +79,29 @@
       color: #003366;
       margin-top: 0;
     }
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 1rem;
+    }
     .gallery-item {
       position: relative;
-      display: inline-block;
-      margin: 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 10px;
     }
     .gallery img {
       height: 120px;
       border-radius: 6px;
       box-shadow: 0 0 5px #aaa;
+    }
+    .caption {
+      font-size: 0.85rem;
+      margin-top: 6px;
+      text-align: center;
+      font-weight: bold;
     }
     .image-buttons {
       position: absolute;
@@ -106,51 +121,34 @@
       padding: 2px 4px;
       cursor: pointer;
     }
-    .caption {
-      font-size: 0.8rem;
-      margin-top: 2px;
-    }
   </style>
 </head>
 <body>
   <header>
-    <img src="logo.png" alt="Bergwacht Logo" class="logo">
-    <span style="font-size: 1.5rem; font-weight: bold;">Einsatzboard – <span id="einsatzIdDisplay" style="color: #c10000;"></span></span>
+    <h1>Einsatzboard – Bergwacht</h1>
   </header>
   <main>
     <div class="field-container">
       <h2>Funkkanäle</h2>
-      <div id="funkkanalDisplay"></div>
-      <input type="text" id="funkkanal" placeholder="Funkkanal z. B. 421.2125 MHz">
-      <button onclick="saveData('funkkanal')">Funkkanal speichern</button>
+      <input id="funkkanal" placeholder="Funkkanal eingeben">
     </div>
-
     <div class="field-container">
       <h2>Ansprechpartner / Funkrufnamen</h2>
-      <div id="ansprechpartnerDisplay"></div>
-      <input type="text" id="ansprechpartner" placeholder="Ansprechpartner / Funkrufname">
-      <button onclick="saveData('ansprechpartner')">Speichern</button>
+      <input id="funkrufname" placeholder="Funkrufname eingeben">
     </div>
-
     <div class="field-container">
       <h2>Hinweise</h2>
-      <div id="hinweisDisplay"></div>
-      <input type="text" id="hinweis" placeholder="Besondere Hinweise (Wetter, Gelände usw.)">
-      <button onclick="saveData('hinweis')">Hinweis speichern</button>
+      <input id="hinweise" placeholder="Hinweise eingeben">
     </div>
-
     <div class="field-container">
       <h2>Koordinaten</h2>
-      <div id="koordDisplay"></div>
-      <input type="text" id="koord" placeholder="Koordinaten z. B. Apfel.Baum.Zelt">
-      <input type="text" id="koordInfo" placeholder="Info zur Koordinate">
-      <button onclick="saveData('koordinaten')">Koordinate speichern</button>
+      <input id="koord" placeholder="z. B. Apfel.Baum.Zelt">
+      <input id="koordInfo" placeholder="Beschreibung zur Koordinate">
     </div>
-
     <div class="field-container">
       <h2>Bilder vom Einsatz</h2>
-      <input type="file" id="imageInput" accept="image/*">
-      <input type="text" id="imageCaption" placeholder="Bildtitel eingeben">
+      <input type="file" id="imageUpload">
+      <input type="text" id="imageTitle" placeholder="Bildtitel eingeben">
       <button onclick="uploadImage()">Bild hochladen</button>
       <div class="gallery" id="gallery"></div>
     </div>
@@ -169,140 +167,76 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const einsatz = urlParams.get("einsatz");
-    if (!einsatz) {
-      document.body.innerHTML = "<p style='padding:2rem;'>Kein gültiger Einsatz ausgewählt oder Parameter fehlt.</p>";
-      throw new Error("Kein Einsatzparameter");
-    }
-
-    function saveData(type) {
-      const refPath = `einsaetze/${einsatz}/${type}`;
-      let value;
-
-      if (type === 'koordinaten') {
-        const ort = document.getElementById("koord").value.trim();
-        const info = document.getElementById("koordInfo").value.trim();
-        if (!ort && !info) return;
-        value = { ort, info };
-      } else {
-        const inputEl = document.getElementById(type);
-        const input = inputEl.value.trim();
-        if (!input) return;
-        value = input;
-      }
-
-      db.ref(refPath).push(value).then(() => {
-        if (type === 'koordinaten') {
-          document.getElementById("koord").value = "";
-          document.getElementById("koordInfo").value = "";
-        } else {
-          document.getElementById(type).value = "";
-        }
-      });
-    }
-
-    function deleteEntry(type, key) {
-      const refPath = `einsaetze/${einsatz}/${type}/${key}`;
-      db.ref(refPath).remove();
-    }
-
-    function renderData() {
-      const sections = [
-        { key: 'funkkanal', containerId: 'funkkanalDisplay' },
-        { key: 'ansprechpartner', containerId: 'ansprechpartnerDisplay' },
-        { key: 'hinweis', containerId: 'hinweisDisplay' },
-        { key: 'koordinaten', containerId: 'koordDisplay', isCoord: true }
-      ];
-
-      sections.forEach(({ key, containerId, isCoord }) => {
-        const container = document.getElementById(containerId);
-        db.ref(`einsaetze/${einsatz}/${key}`).on("value", snapshot => {
-          const list = snapshot.val() || {};
-          container.innerHTML = "";
-          for (let k in list) {
-            const div = document.createElement("div");
-            div.className = "existing-data";
-            const text = isCoord
-              ? `<strong>${list[k].ort}</strong>: ${list[k].info}`
-              : list[k];
-            div.innerHTML = `<span>${text}</span>
-              <span class='entry-buttons'>
-                <button onclick="deleteEntry('${key}', '${k}')">Löschen</button>
-              </span>`;
-            container.appendChild(div);
-          }
-        });
-      });
-    }
+    const einsatz = "demo";
 
     function uploadImage() {
-      const file = document.getElementById('imageInput').files[0];
-      const caption = document.getElementById('imageCaption').value.trim();
-      if (!file || !caption) return alert('Bitte ein Bild UND Titel angeben.');
-
+      const fileInput = document.getElementById("imageUpload");
+      const titleInput = document.getElementById("imageTitle");
+      const file = fileInput.files[0];
+      const title = titleInput.value.trim();
+      if (!file || !title) return alert("Bitte Datei und Titel angeben.");
       const reader = new FileReader();
       reader.onload = function(e) {
         const base64Image = e.target.result;
-        const timestamp = Date.now();
-        const time = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const entry = { data: base64Image, title: `${caption} (${time})` };
-        db.ref(`einsaetze/${einsatz}/bilder/${timestamp}`).set(entry)
+        const now = new Date();
+        const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const fullTitle = `${title} (${time})`;
+        const id = Date.now();
+        db.ref(`einsaetze/${einsatz}/bilder/${id}`).set({ data: base64Image, title: fullTitle })
           .then(() => {
-            document.getElementById('imageInput').value = "";
-            document.getElementById('imageCaption').value = "";
+            fileInput.value = "";
+            titleInput.value = "";
             loadGallery();
-          })
-          .catch(error => alert('Fehler: ' + error));
+          });
       };
       reader.readAsDataURL(file);
     }
 
     function deleteImage(key) {
-      db.ref(`einsaetze/${einsatz}/bilder/${key}`).remove()
-        .then(() => loadGallery());
+      db.ref(`einsaetze/${einsatz}/bilder/${key}`).remove().then(loadGallery);
     }
 
-    function downloadBase64(base64) {
-      const link = document.createElement('a');
-      link.href = base64;
-      link.download = 'einsatzbild.jpg';
+    function downloadImage(dataUrl) {
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.download = "einsatzbild.jpg";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     }
 
     function loadGallery() {
-      db.ref(`einsaetze/${einsatz}/bilder`).once('value', snapshot => {
-        const galleryDiv = document.getElementById('gallery');
-        galleryDiv.innerHTML = '';
+      const gallery = document.getElementById("gallery");
+      gallery.innerHTML = "";
+      db.ref(`einsaetze/${einsatz}/bilder`).once("value", snapshot => {
         const images = snapshot.val();
-        if (images) {
-          Object.entries(images).forEach(([key, { data, title }]) => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'gallery-item';
-            const img = document.createElement('img');
-            img.src = data;
-            const caption = document.createElement('div');
-            caption.className = 'caption';
-            caption.textContent = title || 'Ohne Titel';
-            const buttons = document.createElement('div');
-            buttons.className = 'image-buttons';
-            buttons.innerHTML = `
-              <button onclick="deleteImage('${key}')">🗑</button>
-              <button onclick="downloadBase64('${data}')">⬇️</button>
-            `;
-            wrapper.appendChild(img);
-            wrapper.appendChild(caption);
-            wrapper.appendChild(buttons);
-            galleryDiv.appendChild(wrapper);
-          });
-        }
+        if (!images) return;
+        Object.entries(images).forEach(([key, val]) => {
+          const wrapper = document.createElement("div");
+          wrapper.className = "gallery-item";
+
+          const img = document.createElement("img");
+          img.src = val.data;
+
+          const caption = document.createElement("div");
+          caption.className = "caption";
+          caption.textContent = val.title;
+
+          const buttons = document.createElement("div");
+          buttons.className = "image-buttons";
+          buttons.innerHTML = `
+            <button onclick="deleteImage('${key}')">🗑</button>
+            <button onclick="downloadImage('${val.data}')">⬇️</button>
+          `;
+
+          wrapper.appendChild(img);
+          wrapper.appendChild(caption);
+          wrapper.appendChild(buttons);
+          gallery.appendChild(wrapper);
+        });
       });
     }
 
-    document.getElementById("einsatzIdDisplay").textContent = einsatz;
-    renderData();
     loadGallery();
   </script>
 </body>
