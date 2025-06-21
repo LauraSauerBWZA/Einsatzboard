@@ -6,7 +6,6 @@
   <title>Einsatzboard – Bergwacht</title>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -79,6 +78,12 @@
       color: #003366;
       margin-top: 0;
     }
+    .gallery img {
+      height: 120px;
+      margin: 5px;
+      border-radius: 6px;
+      box-shadow: 0 0 5px #aaa;
+    }
   </style>
 </head>
 <body>
@@ -117,10 +122,10 @@
     </div>
 
     <div class="field-container">
-      <h2>Bilder / Screenshots</h2>
-      <input type="file" id="imageUpload" accept="image/*">
+      <h2>Bilder vom Einsatz</h2>
+      <input type="file" id="imageInput" accept="image/*">
       <button onclick="uploadImage()">Bild hochladen</button>
-      <div id="uploadedImages"></div>
+      <div class="gallery" id="gallery"></div>
     </div>
   </main>
 
@@ -136,7 +141,6 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    const storage = firebase.storage();
 
     const urlParams = new URLSearchParams(window.location.search);
     const einsatz = urlParams.get("einsatz");
@@ -176,24 +180,6 @@
       db.ref(refPath).remove();
     }
 
-    function uploadImage() {
-      const file = document.getElementById("imageUpload").files[0];
-      if (!file) return;
-
-      const fileName = `${Date.now()}_${file.name}`;
-      const storageRef = storage.ref(`einsaetze/${einsatz}/bilder/${fileName}`);
-
-      storageRef.put(file).then(snapshot => {
-        snapshot.ref.getDownloadURL().then(url => {
-          const img = document.createElement("img");
-          img.src = url;
-          img.style.maxWidth = "100%";
-          img.style.marginTop = "1rem";
-          document.getElementById("uploadedImages").appendChild(img);
-        });
-      });
-    }
-
     function renderData() {
       const sections = [
         { key: 'funkkanal', containerId: 'funkkanalDisplay' },
@@ -223,8 +209,42 @@
       });
     }
 
+    function uploadImage() {
+      const file = document.getElementById('imageInput').files[0];
+      if (!file) return alert('Bitte ein Bild auswählen.');
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64Image = e.target.result;
+        const timestamp = Date.now();
+        db.ref(`einsaetze/${einsatz}/bilder/${timestamp}`).set(base64Image)
+          .then(() => {
+            alert('Bild erfolgreich hochgeladen!');
+            loadGallery();
+          })
+          .catch(error => alert('Fehler: ' + error));
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function loadGallery() {
+      db.ref(`einsaetze/${einsatz}/bilder`).once('value', snapshot => {
+        const galleryDiv = document.getElementById('gallery');
+        galleryDiv.innerHTML = '';
+        const images = snapshot.val();
+        if (images) {
+          Object.values(images).forEach(imgData => {
+            const img = document.createElement('img');
+            img.src = imgData;
+            galleryDiv.appendChild(img);
+          });
+        }
+      });
+    }
+
     document.getElementById("einsatzIdDisplay").textContent = einsatz;
     renderData();
+    loadGallery();
   </script>
 </body>
 </html>
