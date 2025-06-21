@@ -254,6 +254,15 @@
         .then(() => loadGallery());
     }
 
+    function downloadBase64(base64) {
+      const link = document.createElement('a');
+      link.href = base64;
+      link.download = 'einsatzbild.jpg';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
     function loadGallery() {
       db.ref(`einsaetze/${einsatz}/bilder`).once('value', snapshot => {
         const galleryDiv = document.getElementById('gallery');
@@ -269,7 +278,7 @@
             buttons.className = 'image-buttons';
             buttons.innerHTML = `
               <button onclick="deleteImage('${key}')">🗑</button>
-              <button onclick="window.open('${data}', '_blank')">⬇️</button>
+              <button onclick="downloadBase64('${data}')">⬇️</button>
             `;
             wrapper.appendChild(img);
             wrapper.appendChild(buttons);
