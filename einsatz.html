@@ -237,70 +237,68 @@
     }
 
     function uploadImage() {
-      const file = document.getElementById('imageInput').files[0];
-      const caption = document.getElementById('imageCaption').value.trim();
-      if (!file || !caption) return alert('Bitte ein Bild UND Titel angeben.');
+  const file = document.getElementById('imageInput').files[0];
+  const caption = document.getElementById('imageCaption').value.trim();
+  if (!file || !caption) return alert('Bitte ein Bild UND Titel angeben.');
 
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const base64Image = e.target.result;
-        const timestamp = Date.now();
-        const time = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const entry = { data: base64Image, title: `${caption} (${time})` };
-        db.ref(`einsaetze/${einsatz}/bilder/${timestamp}`).set(entry)
-          .then(() => {
-            document.getElementById('imageInput').value = "";
-            document.getElementById('imageCaption').value = "";
-            loadGallery();
-          })
-          .catch(error => alert('Fehler: ' + error));
-      };
-      reader.readAsDataURL(file);
-    }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const base64Image = e.target.result;
+    const timestamp = Date.now();
+    const time = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const entry = {
+      data: base64Image,
+      title: caption,
+      time: time
+    };
 
-    function deleteImage(key) {
-      db.ref(`einsaetze/${einsatz}/bilder/${key}`).remove()
-        .then(() => loadGallery());
-    }
+    db.ref(`einsaetze/${einsatz}/bilder/${timestamp}`).set(entry)
+      .then(() => {
+        document.getElementById('imageInput').value = "";
+        document.getElementById('imageCaption').value = "";
+        loadGallery(); // Galerie direkt aktualisieren
+      })
+      .catch(error => alert('Fehler: ' + error));
+  };
+  reader.readAsDataURL(file);
+}
 
-    function downloadBase64(base64) {
-      const link = document.createElement('a');
-      link.href = base64;
-      link.download = 'einsatzbild.jpg';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
+function loadGallery() {
+  db.ref(`einsaetze/${einsatz}/bilder`).once('value', snapshot => {
+    const galleryDiv = document.getElementById('gallery');
+    galleryDiv.innerHTML = '';
+    const images = snapshot.val();
+    if (images) {
+      Object.entries(images).forEach(([key, { data, title, time }]) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'gallery-item';
 
-    function loadGallery() {
-      db.ref(`einsaetze/${einsatz}/bilder`).once('value', snapshot => {
-        const galleryDiv = document.getElementById('gallery');
-        galleryDiv.innerHTML = '';
-        const images = snapshot.val();
-        if (images) {
-          Object.entries(images).forEach(([key, { data, title }]) => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'gallery-item';
-            const img = document.createElement('img');
-            img.src = data;
-            const caption = document.createElement('div');
-            caption.className = 'caption';
-            caption.textContent = title || 'Ohne Titel';
-            const buttons = document.createElement('div');
-            buttons.className = 'image-buttons';
-            buttons.innerHTML = `
-              <button onclick="deleteImage('${key}')">🗑</button>
-              <button onclick="downloadBase64('${data}')">⬇️</button>
-            `;
-            wrapper.appendChild(img);
-            wrapper.appendChild(caption);
-            wrapper.appendChild(buttons);
-            galleryDiv.appendChild(wrapper);
-          });
-        }
+        const img = document.createElement('img');
+        img.src = data;
+        img.alt = title;
+        img.onclick = () => window.open(data, '_blank');
+
+        const captionDiv = document.createElement('div');
+        captionDiv.className = 'caption';
+        captionDiv.innerHTML = `<strong>${title}</strong><br><small>${time}</small>`;
+
+        const buttons = document.createElement('div');
+        buttons.className = 'image-buttons';
+        buttons.innerHTML = `
+          <button onclick="deleteImage('${key}')">🗑</button>
+          <button onclick="downloadBase64('${data}')">⬇️</button>
+          <button onclick="window.open('${data}', '_blank')">🔍</button>
+        `;
+
+        wrapper.appendChild(img);
+        wrapper.appendChild(captionDiv);
+        wrapper.appendChild(buttons);
+        galleryDiv.appendChild(wrapper);
       });
     }
-
+  });
+}
+    
     document.getElementById("einsatzIdDisplay").textContent = einsatz;
     renderData();
     loadGallery();
