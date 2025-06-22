@@ -265,26 +265,26 @@ input[type="text"] {
     <span style="font-size: 1.5rem; font-weight: bold;">Einsatzboard – <span id="einsatzIdDisplay" style="color: #c10000;"></span></span>
   </header>
   <main>
- <div class="field-container">
-  <h2>Funktion / Funkrufnamen</h2>
-  <div id="ansprechpartnerDisplay"></div>
-  <input type="text" id="ansprechName" placeholder="Funktion - z.B. EVD Bergwacht">
-  <input type="text" id="ansprechRuf" placeholder="Funkrufname- z. B. Bergwacht 5">
-  <button onclick="saveData('ansprechpartner')">Speichern</button>
-</div>
+    <div class="field-container">
+      <h2>Funktion / Funkrufnamen</h2>
+      <div id="ansprechpartnerDisplay"></div>
+      <input type="text" id="ansprechName" placeholder="Funktion - z.B. EVD Bergwacht">
+      <input type="text" id="ansprechRuf" placeholder="Funkrufname- z. B. Bergwacht 5">
+      <button class="btn-primary" onclick="saveData('ansprechpartner')">Speichern</button>
+    </div>
 
-       <div class="field-container">
+    <div class="field-container">
       <h2>Funkkanäle</h2>
       <div id="funkkanalDisplay"></div>
       <input type="text" id="funkkanal" placeholder="z.B. HO BL 06 SB6">
-      <button onclick="saveData('funkkanal')">Funkkanal Speichern</button>
+      <button class="btn-primary" onclick="saveData('funkkanal')">Funkkanal speichern</button>
     </div>
 
     <div class="field-container">
       <h2>Hinweise</h2>
       <div id="hinweisDisplay"></div>
       <input type="text" id="hinweis" placeholder="Besondere Hinweise (Eigenschutz, Gelände usw.)">
-      <button onclick="saveData('hinweis')">Hinweis speichern</button>
+      <button class="btn-primary" onclick="saveData('hinweis')">Hinweis speichern</button>
     </div>
 
     <div class="field-container">
@@ -292,7 +292,7 @@ input[type="text"] {
       <div id="koordDisplay"></div>
       <input type="text" id="koord" placeholder="Koordinaten z. B. ///W3W, UTM, GPS">
       <input type="text" id="koordInfo" placeholder="Info zur Koordinate">
-      <button onclick="saveData('koordinaten')">Koordinate speichern</button>
+      <button class="btn-primary" onclick="saveData('koordinaten')">Koordinate speichern</button>
     </div>
 
     <div class="field-container">
@@ -300,9 +300,9 @@ input[type="text"] {
       <input type="file" id="imageInput" accept="image/*">
       <input type="text" id="imageCaption" placeholder="Bildtitel eingeben">
       <div id="uploadStatus" style="display:none; font-size: 0.9rem; color: #003366; margin-top: 0.5rem;">
-  ⏳ Bild wird hochgeladen...
-</div>
-<button onclick="uploadImage()">Bild hochladen</button>
+        ⏳ Bild wird hochgeladen...
+      </div>
+      <button class="btn-primary" onclick="uploadImage()">Bild hochladen</button>
       <div class="gallery" id="gallery"></div>
     </div>
   </main>
@@ -311,9 +311,10 @@ input[type="text"] {
   <div id="lightbox" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:1000;">
     <div style="position:relative; max-width:90%; max-height:90%;">
       <img id="lightboxImage" src="" style="width:100%; height:auto; border-radius:8px;">
-      <button onclick="closeLightbox()" style="position:absolute; top:10px; right:10px; background:#fff; color:#000; border:none; padding:5px 10px; font-size:1rem; border-radius:4px; cursor:pointer;">✖</button>
+      <button class="btn-secondary" onclick="closeLightbox()" style="position:absolute; top:10px; right:10px;">✖</button>
     </div>
   </div>
+</body>
 
   <script>
     const firebaseConfig = {
