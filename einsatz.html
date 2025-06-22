@@ -231,15 +231,6 @@ function saveData(type) {
     function deleteEntry(type, key) {
       const refPath = `einsaetze/${einsatz}/${type}/${key}`;
 
-else if (type === 'ansprechpartner') {
-  const name = document.getElementById("ansprechName").value.trim();
-  const ruf = document.getElementById("ansprechRuf").value.trim();
-  if (!name || !ruf) return;
-  value = `${name} – „${ruf}”`;
-  document.getElementById("ansprechName").value = "";
-  document.getElementById("ansprechRuf").value = "";
-}
-
       db.ref(refPath).remove();
     }
 
