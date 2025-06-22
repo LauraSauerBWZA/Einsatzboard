@@ -232,10 +232,12 @@ function saveData(type) {
 }
 
     function deleteEntry(type, key) {
-      const refPath = `einsaetze/${einsatz}/${type}/${key}`;
+  if (!confirm("Eintrag wirklich löschen?")) return;
 
-      db.ref(refPath).remove();
-    }
+  const refPath = `einsaetze/${einsatz}/${type}/${key}`;
+  db.ref(refPath).remove();
+}
+
 
     function renderData() {
       const sections = [
@@ -328,9 +330,11 @@ for (let k in list) {
 }
 
     function deleteImage(key) {
-      db.ref(`einsaetze/${einsatz}/bilder/${key}`).remove()
-        .then(() => loadGallery());
-    }
+  if (!confirm("Eintrag wirklich löschen?")) return;
+
+  db.ref(`einsaetze/${einsatz}/bilder/${key}`).remove()
+    .then(() => loadGallery());
+}
 
     function downloadBase64(base64) {
       const link = document.createElement('a');
