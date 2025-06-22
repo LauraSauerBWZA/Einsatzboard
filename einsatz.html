@@ -411,59 +411,59 @@ function saveData(type) {
   db.ref(refPath).remove();
 }
 
+function renderData() {
+  const sections = [
+    { key: 'funkkanal', containerId: 'funkkanalDisplay' },
+    { key: 'ansprechpartner', containerId: 'ansprechpartnerDisplay' },
+    { key: 'hinweis', containerId: 'hinweisDisplay' },
+    { key: 'koordinaten', containerId: 'koordDisplay', isCoord: true }
+  ];
 
-    function renderData() {
-      const sections = [
-        { key: 'funkkanal', containerId: 'funkkanalDisplay' },
-        { key: 'ansprechpartner', containerId: 'ansprechpartnerDisplay' },
-        { key: 'hinweis', containerId: 'hinweisDisplay' },
-        { key: 'koordinaten', containerId: 'koordDisplay', isCoord: true }
-      ];
+  sections.forEach(({ key, containerId, isCoord }) => {
+    const container = document.getElementById(containerId);
+    db.ref(`einsaetze/${einsatz}/${key}`).on("value", snapshot => {
+      const list = snapshot.val() || {};
+      container.innerHTML = "";
 
-      sections.forEach(({ key, containerId, isCoord }) => {
-        const container = document.getElementById(containerId);
-        db.ref(`einsaetze/${einsatz}/${key}`).on("value", snapshot => {
-          const list = snapshot.val() || {};
-          container.innerHTML = "";
-for (let k in list) {
-  const div = document.createElement("div");
-  div.className = "existing-data";
+      for (let k in list) {
+        const div = document.createElement("div");
+        div.className = "existing-data";
 
-  if (isCoord) {
-    const ort = list[k].ort;
-    const info = list[k].info;
-    div.innerHTML = `
-  <span style="text-align: left;">
-    <strong>${ort}</strong><br>
-    <span style="font-size: 0.9rem;">${info}</span>
-  </span>
-      <span class='entry-buttons'>
-        <button onclick="copyCoord('${ort}', this)">Kopieren</button>
-        <button onclick="deleteEntry('${key}', '${k}')">Löschen</button>
-      </span>`;
- } else if (key === 'ansprechpartner') {
-  const [funktion, rufname] = list[k].split(" – ");
-  div.innerHTML = `
-    <span style="text-align: left;">
-      <strong>${funktion}</strong><br>
-      <span style="font-size: 0.9rem;">${rufname}</span>
-    </span>
-    <span class='entry-buttons'>
-      <button class="btn-danger" onclick="deleteEntry('${key}', '${k}')">Löschen</button>
-    </span>`;
-} else {
-  div.innerHTML = `
-    <span>${list[k]}</span>
-    <span class='entry-buttons'>
-      <button class="btn-danger" onclick="deleteEntry('${key}', '${k}')">Löschen</button>
-    </span>`;
+        if (isCoord) {
+          const ort = list[k].ort;
+          const info = list[k].info;
+          div.innerHTML = `
+            <span style="text-align: left;">
+              <strong>${ort}</strong><br>
+              <span style="font-size: 0.9rem;">${info}</span>
+            </span>
+            <span class='entry-buttons'>
+              <button class="btn-secondary" onclick="copyCoord('${ort}', this)">Kopieren</button>
+              <button class="btn-secondary" onclick="deleteEntry('${key}', '${k}')">Löschen</button>
+            </span>`;
+        } else if (key === 'ansprechpartner') {
+          const [funktion, rufname] = list[k].split(" – ");
+          div.innerHTML = `
+            <span style="text-align: left;">
+              <strong>${funktion}</strong><br>
+              <span style="font-size: 0.9rem;">${rufname}</span>
+            </span>
+            <span class='entry-buttons'>
+              <button class="btn-secondary" onclick="deleteEntry('${key}', '${k}')">Löschen</button>
+            </span>`;
+        } else {
+          div.innerHTML = `
+            <span>${list[k]}</span>
+            <span class='entry-buttons'>
+              <button class="btn-secondary" onclick="deleteEntry('${key}', '${k}')">Löschen</button>
+            </span>`;
+        }
+
+        container.appendChild(div);
+      }
+    });
+  });
 }
-  container.appendChild(div);
-}
-
-        });
-      });
-    }
 
   function uploadImage() {
   const file = document.getElementById('imageInput').files[0];
