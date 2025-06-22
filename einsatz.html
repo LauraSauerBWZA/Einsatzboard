@@ -273,14 +273,14 @@ function loadGallery() {
         const wrapper = document.createElement('div');
         wrapper.className = 'gallery-item';
 
+        const captionDiv = document.createElement('div');
+        captionDiv.className = 'caption';
+        captionDiv.innerHTML = `<strong>${title}</strong><br><small>${time}</small>`;
+
         const img = document.createElement('img');
         img.src = data;
         img.alt = title;
         img.onclick = () => window.open(data, '_blank');
-
-        const captionDiv = document.createElement('div');
-        captionDiv.className = 'caption';
-        captionDiv.innerHTML = `<strong>${title}</strong><br><small>${time}</small>`;
 
         const buttons = document.createElement('div');
         buttons.className = 'image-buttons';
@@ -290,9 +290,10 @@ function loadGallery() {
           <button onclick="window.open('${data}', '_blank')">🔍</button>
         `;
 
-        wrapper.appendChild(img);
-        wrapper.appendChild(captionDiv);
-        wrapper.appendChild(buttons);
+        wrapper.appendChild(captionDiv); // Zuerst Titel und Uhrzeit
+        wrapper.appendChild(img);        // Dann das Bild
+        wrapper.appendChild(buttons);    // Dann die Buttons
+
         galleryDiv.appendChild(wrapper);
       });
     }
