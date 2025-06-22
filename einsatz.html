@@ -7,12 +7,11 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
-  /* 🌄 Einsatzboard – modernes, minimalistisches Design im Bergwacht-Stil */
+  /* 🌄 Modernisiertes Einsatzboard-Design mit konsistentem Stil */
 
-  /* 🔤 Basis-Design */
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    background-color: #f0f4f8; /* Helles Grau-Blau */
+    background-color: #f0f4f8;
     color: #111;
     margin: 0;
     padding: 0;
@@ -20,10 +19,10 @@
   }
 
   header {
-    background-color: #003366; /* Primärfarbe Bergwacht */
+    background-color: #003366;
     color: white;
     padding: 1.5rem 1rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
   }
 
   .logo {
@@ -36,85 +35,111 @@
     padding: 2rem 1rem;
   }
 
-  /* 🧾 Eingabefelder und Buttons */
-  input, button {
-    font-size: 1rem;
-    padding: 1rem;
-    width: 100%;
-    max-width: 500px;
-    margin: 0.4rem auto;
-    box-sizing: border-box;
+  h2 {
+    color: #003366;
+    font-size: 1.25rem;
+    margin: 1.5rem 0 1rem 0;
   }
 
-  input {
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    transition: border-color 0.2s ease;
-  }
-
-  input:focus {
-    border-color: #003366;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(0, 51, 102, 0.2);
-  }
-
-  button {
-    background-color: #003366;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 500;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  button:hover {
-    background-color: #004080;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  }
-
-  .entry-buttons button {
-    background-color: #666;
-    font-size: 0.85rem;
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
-  }
-
-  .entry-buttons button:hover {
-    background-color: #c10000; /* Akzentfarbe bei Hover */
-    color: #fff;
-  }
-
-  /* 🧱 Container */
+  /* 📦 Eingabecontainer */
   .field-container {
     margin: 2rem auto;
     max-width: 640px;
     background: white;
     border-radius: 12px;
     padding: 2rem 1.5rem;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* vereinheitlichter Schatten */
     text-align: left;
-  }
-
-  h2 {
-    color: #003366;
-    font-size: 1.25rem;
-    margin-bottom: 1rem;
   }
 
   .existing-data {
     background-color: #fefefe;
     border: 1px solid #eee;
-    border-left: 4px solid #c10000; /* Akzentfarbiger Balken */
+    border-left: 4px solid #c10000;
     padding: 1rem;
     margin-bottom: 1rem;
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* gleich wie field-container */
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: 1rem;
     word-break: break-word;
+  }
+
+  /* ✏️ Inputs */
+  input[type="text"] {
+    font-size: 1rem;
+    padding: 0.9rem 1rem;
+    width: 100%;
+    max-width: 500px;
+    margin: 0.4rem auto;
+    box-sizing: border-box;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  input[type="text"]:hover {
+    border-color: #999;
+  }
+
+  input[type="text"]:focus {
+    border-color: #003366;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.2);
+  }
+
+  /* 🔘 Button-Grunddesign */
+  button {
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 0.9rem 1.2rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.2);
+  }
+
+  /* 🎨 Button-Typen */
+  .btn-primary {
+    background-color: #003366;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background-color: #004080;
+  }
+
+  .btn-secondary {
+    background-color: #666;
+    color: white;
+  }
+
+  .btn-secondary:hover {
+    background-color: #555;
+  }
+
+  .btn-danger {
+    background-color: #c10000;
+    color: white;
+  }
+
+  .btn-danger:hover {
+    background-color: #990000;
+  }
+
+  /* 🔢 Button-Gruppen */
+  .entry-buttons button {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+    margin-left: 0.5rem;
   }
 
   /* 🖼 Galerie */
@@ -131,7 +156,7 @@
     width: 140px;
     background-color: white;
     border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* einheitlich */
     padding: 0.5rem;
     text-align: center;
     transition: transform 0.2s ease;
@@ -162,16 +187,8 @@
   }
 
   .image-buttons button {
-    background-color: #003366;
-    color: white;
     font-size: 0.75rem;
     padding: 4px 8px;
-    border-radius: 6px;
-    border: none;
-  }
-
-  .image-buttons button:hover {
-    background-color: #004080;
   }
 
   /* 💬 Upload-Status */
@@ -211,9 +228,9 @@
     cursor: pointer;
   }
 
-  /* 📱 Responsive Anpassung */
+  /* 📱 Responsive */
   @media (max-width: 600px) {
-    input, button {
+    input[type="text"], button {
       font-size: 1rem;
       padding: 0.9rem;
     }
@@ -226,6 +243,19 @@
       width: 100px;
     }
   }
+.gallery-item img {
+  width: 100%;
+  border-radius: 4px;
+  cursor: pointer;
+  object-fit: cover;
+  height: 100px;
+}
+/* 🌟 Übergänge für Buttons & Inputs */
+button,
+input[type="text"] {
+  transition: all 0.2s ease-in-out;
+}
+
 </style>
 
 </head>
