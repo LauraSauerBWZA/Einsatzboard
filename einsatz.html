@@ -422,7 +422,7 @@ for (let k in list) {
     <span style="font-size: 0.9rem;">${info}</span>
   </span>
       <span class='entry-buttons'>
-        <button onclick="navigator.clipboard.writeText('${ort}').then(() => console.log('Koordinate kopiert'))">Kopieren</button>
+        <button onclick="copyCoord('${ort}', this)">Kopieren</button>
         <button onclick="deleteEntry('${key}', '${k}')">Löschen</button>
       </span>`;
  } else if (key === 'ansprechpartner') {
@@ -567,6 +567,36 @@ const datum = `${day}.${month}.${year}`;
 document.getElementById("einsatzIdDisplay").textContent = `${einsatz} (${datum})`;
 
     renderData();
+    function copyCoord(text, buttonEl) {
+  navigator.clipboard.writeText(text).then(() => {
+    const popup = document.createElement("span");
+    popup.textContent = "✓ Kopiert";
+    popup.style.position = "absolute";
+    popup.style.background = "#003366";
+    popup.style.color = "white";
+    popup.style.fontSize = "0.75rem";
+    popup.style.padding = "2px 6px";
+    popup.style.borderRadius = "6px";
+    popup.style.top = "-1.5rem";
+    popup.style.right = "0";
+    popup.style.zIndex = "10";
+    popup.style.boxShadow = "0 2px 6px rgba(0,0,0,0.2)";
+    popup.style.opacity = "0";
+    popup.style.transition = "opacity 0.3s ease";
+
+    buttonEl.style.position = "relative";
+    buttonEl.parentElement.appendChild(popup);
+
+    requestAnimationFrame(() => {
+      popup.style.opacity = "1";
+    });
+
+    setTimeout(() => {
+      popup.style.opacity = "0";
+      setTimeout(() => popup.remove(), 300);
+    }, 1500);
+  });
+}
     loadGallery();
   </script>
 </body>
