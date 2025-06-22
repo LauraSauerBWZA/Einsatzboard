@@ -255,17 +255,19 @@ function saveData(type) {
   div.className = "existing-data";
 
   if (isCoord) {
-    const ort = list[k].ort;
-    const info = list[k].info;
-    div.innerHTML = `
-      <span>
-        <strong>${ort}</strong>: ${info}
-        <button style="margin-left: 8px; background: none; border: none; cursor: pointer; font-size: 1rem; color: #666;" onclick="navigator.clipboard.writeText('${ort}').then(() => console.log('Koordinate kopiert'))">📋</button>
-      </span>
-      <span class='entry-buttons'>
-        <button onclick="deleteEntry('${key}', '${k}')">Löschen</button>
-      </span>`;
-  } else {
+  const ort = list[k].ort;
+  const info = list[k].info;
+  div.innerHTML = `
+    <span>
+      <strong>${ort}</strong>: ${info}
+    </span>
+    <span class='entry-buttons'>
+      <button onclick="navigator.clipboard.writeText('${ort}').then(() => console.log('Koordinate kopiert'))">Kopieren</button>
+      <button onclick="deleteEntry('${key}', '${k}')">Löschen</button>
+    </span>`;
+}
+  } 
+  else {
     div.innerHTML = `
       <span>${list[k]}</span>
       <span class='entry-buttons'>
