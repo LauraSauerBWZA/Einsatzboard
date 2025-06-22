@@ -6,120 +6,228 @@
   <title>Einsatzboard – Bergwacht</title>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f4f8;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
-    header {
-      background-color: #003366;
-      color: white;
-      padding: 1rem;
-    }
-    .logo {
-      height: 40px;
-      vertical-align: middle;
-      margin-right: 10px;
-    }
-    main {
-      padding: 2rem;
-    }
+<style>
+  /* 🌄 Einsatzboard – modernes, minimalistisches Design im Bergwacht-Stil */
+
+  /* 🔤 Basis-Design */
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background-color: #f0f4f8; /* Helles Grau-Blau */
+    color: #111;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
+
+  header {
+    background-color: #003366; /* Primärfarbe Bergwacht */
+    color: white;
+    padding: 1.5rem 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .logo {
+    height: 44px;
+    vertical-align: middle;
+    margin-right: 12px;
+  }
+
+  main {
+    padding: 2rem 1rem;
+  }
+
+  /* 🧾 Eingabefelder und Buttons */
+  input, button {
+    font-size: 1rem;
+    padding: 1rem;
+    width: 100%;
+    max-width: 500px;
+    margin: 0.4rem auto;
+    box-sizing: border-box;
+  }
+
+  input {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    transition: border-color 0.2s ease;
+  }
+
+  input:focus {
+    border-color: #003366;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 51, 102, 0.2);
+  }
+
+  button {
+    background-color: #003366;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  button:hover {
+    background-color: #004080;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .entry-buttons button {
+    background-color: #666;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+  }
+
+  .entry-buttons button:hover {
+    background-color: #c10000; /* Akzentfarbe bei Hover */
+    color: #fff;
+  }
+
+  /* 🧱 Container */
+  .field-container {
+    margin: 2rem auto;
+    max-width: 640px;
+    background: white;
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+    text-align: left;
+  }
+
+  h2 {
+    color: #003366;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .existing-data {
+    background-color: #fefefe;
+    border: 1px solid #eee;
+    border-left: 4px solid #c10000; /* Akzentfarbiger Balken */
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    word-break: break-word;
+  }
+
+  /* 🖼 Galerie */
+  .gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .gallery-item {
+    position: relative;
+    width: 140px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    padding: 0.5rem;
+    text-align: center;
+    transition: transform 0.2s ease;
+  }
+
+  .gallery-item:hover {
+    transform: scale(1.02);
+  }
+
+  .gallery-item img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .caption {
+    font-size: 0.85rem;
+    margin: 0.5rem 0 0.25rem;
+    color: #333;
+  }
+
+  .image-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+  }
+
+  .image-buttons button {
+    background-color: #003366;
+    color: white;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: none;
+  }
+
+  .image-buttons button:hover {
+    background-color: #004080;
+  }
+
+  /* 💬 Upload-Status */
+  #uploadStatus {
+    font-size: 0.95rem;
+    color: #003366;
+    margin-top: 0.5rem;
+  }
+
+  /* 🔍 Lightbox */
+  #lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0,0,0,0.8);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  #lightboxImage {
+    width: 90%;
+    max-height: 90%;
+    border-radius: 12px;
+  }
+
+  #lightbox button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  /* 📱 Responsive Anpassung */
+  @media (max-width: 600px) {
     input, button {
-      padding: 0.8rem;
       font-size: 1rem;
-      margin: 0.5rem auto;
-      width: 80%;
-      max-width: 500px;
+      padding: 0.9rem;
     }
-    input {
-      background-color: #ffffff;
-      border: 2px solid #cccccc;
-      border-radius: 4px;
-    }
-    button {
-      background-color: #003366;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 4px;
-      margin: 0.2rem;
-    }
-    button:hover {
-      opacity: 0.9;
-    }
+
     .field-container {
-      margin: 2rem auto;
-      max-width: 600px;
-      background: #f7fafd;
-      border: 2px solid #cce0f5;
-      padding: 1rem;
-      border-radius: 6px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      padding: 1.5rem 1rem;
     }
-    .existing-data {
-      background-color: #fbeaea;
-      margin-bottom: 1rem;
-      padding: 0.5rem;
-      border-radius: 4px;
-      border: 1px solid #c10000;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .entry-buttons button {
-      background-color: #666;
-      font-size: 0.8rem;
-      padding: 0.4rem 0.6rem;
-    }
-    h2 {
-      color: #003366;
-      margin-top: 0;
-    }
-    .gallery {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-    }
+
     .gallery-item {
-      position: relative;
-      width: 140px;
-      background-color: white;
-      border-radius: 6px;
-      box-shadow: 0 0 5px #aaa;
-      padding: 5px;
-      text-align: center;
+      width: 100px;
     }
-    .gallery-item img {
-      width: 100%;
-      border-radius: 4px;
-      cursor: pointer;
-      object-fit: cover;
-      height: 100px;
-    }
-    .caption {
-      font-size: 0.8rem;
-      margin-bottom: 4px;
-      word-wrap: break-word;
-    }
-    .image-buttons {
-      display: flex;
-      justify-content: space-around;
-      margin-top: 4px;
-    }
-    .image-buttons button {
-      background-color: #003366;
-      color: white;
-      font-size: 0.7rem;
-      border: none;
-      padding: 2px 6px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-  </style>
+  }
+</style>
+
 </head>
 <body>
   <header>
