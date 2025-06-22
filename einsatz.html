@@ -147,6 +147,10 @@ button.btn-danger {
     padding: 0.5rem 0.75rem;
     margin-left: 0.5rem;
   }
+  .entry-buttons button {
+  position: relative;
+  overflow: visible;
+}
   .field-container button {
   display: block;
   width: auto;
@@ -585,7 +589,8 @@ document.getElementById("einsatzIdDisplay").textContent = `${einsatz} (${datum})
     popup.style.transition = "opacity 0.3s ease";
 
     buttonEl.style.position = "relative";
-    buttonEl.parentElement.appendChild(popup);
+    buttonEl.style.position = "relative";
+buttonEl.appendChild(popup);
 
     requestAnimationFrame(() => {
       popup.style.opacity = "1";
