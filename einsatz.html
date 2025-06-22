@@ -260,9 +260,10 @@ for (let k in list) {
     const ort = list[k].ort;
     const info = list[k].info;
     div.innerHTML = `
-      <span>
-        <strong>${ort}</strong>: ${info}
-      </span>
+  <span style="text-align: left;">
+    <strong>${ort}</strong><br>
+    <span style="font-size: 0.9rem;">${info}</span>
+  </span>
       <span class='entry-buttons'>
         <button onclick="navigator.clipboard.writeText('${ort}').then(() => console.log('Koordinate kopiert'))">Kopieren</button>
         <button onclick="deleteEntry('${key}', '${k}')">Löschen</button>
