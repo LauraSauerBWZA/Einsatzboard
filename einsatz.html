@@ -194,31 +194,40 @@
       throw new Error("Kein Einsatzparameter");
     }
 
-    function saveData(type) {
-      const refPath = `einsaetze/${einsatz}/${type}`;
-      let value;
+function saveData(type) {
+  const refPath = `einsaetze/${einsatz}/${type}`;
+  let value;
 
-      if (type === 'koordinaten') {
-        const ort = document.getElementById("koord").value.trim();
-        const info = document.getElementById("koordInfo").value.trim();
-        if (!ort && !info) return;
-        value = { ort, info };
-      } else {
-        const inputEl = document.getElementById(type);
-        const input = inputEl.value.trim();
-        if (!input) return;
-        value = input;
-      }
+  if (type === 'koordinaten') {
+    const ort = document.getElementById("koord").value.trim();
+    const info = document.getElementById("koordInfo").value.trim();
+    if (!ort || !info) return;
+    value = { ort, info };
+  } else if (type === 'ansprechpartner') {
+    const name = document.getElementById("ansprechName").value.trim();
+    const ruf = document.getElementById("ansprechRuf").value.trim();
+    if (!name || !ruf) return;
+    value = `${name} – „${ruf}”`;
+  } else {
+    const inputEl = document.getElementById(type);
+    const input = inputEl.value.trim();
+    if (!input) return;
+    value = input;
+  }
 
-      db.ref(refPath).push(value).then(() => {
-        if (type === 'koordinaten') {
-          document.getElementById("koord").value = "";
-          document.getElementById("koordInfo").value = "";
-        } else {
-          document.getElementById(type).value = "";
-        }
-      });
+  db.ref(refPath).push(value).then(() => {
+    if (type === 'koordinaten') {
+      document.getElementById("koord").value = "";
+      document.getElementById("koordInfo").value = "";
+    } else if (type === 'ansprechpartner') {
+      document.getElementById("ansprechName").value = "";
+      document.getElementById("ansprechRuf").value = "";
+    } else {
+      document.getElementById(type).value = "";
     }
+  });
+}
+
 
     function deleteEntry(type, key) {
       const refPath = `einsaetze/${einsatz}/${type}/${key}`;
