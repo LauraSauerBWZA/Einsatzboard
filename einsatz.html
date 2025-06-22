@@ -78,37 +78,46 @@
       color: #003366;
       margin-top: 0;
     }
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
     .gallery-item {
       position: relative;
-      display: inline-block;
-      margin: 5px;
-    }
-    .gallery img {
-      height: 120px;
+      width: 140px;
+      background-color: white;
       border-radius: 6px;
       box-shadow: 0 0 5px #aaa;
+      padding: 5px;
+      text-align: center;
     }
-    .image-buttons {
-      position: absolute;
-      bottom: 4px;
-      left: 4px;
-      right: 4px;
-      display: flex;
-      justify-content: space-between;
-      background-color: rgba(0,0,0,0.5);
+    .gallery-item img {
+      width: 100%;
       border-radius: 4px;
-    }
-    .image-buttons button {
-      background-color: rgba(255,255,255,0.8);
-      color: black;
-      font-size: 0.7rem;
-      border: none;
-      padding: 2px 4px;
       cursor: pointer;
+      object-fit: cover;
+      height: 100px;
     }
     .caption {
       font-size: 0.8rem;
-      margin-top: 2px;
+      margin-bottom: 4px;
+      word-wrap: break-word;
+    }
+    .image-buttons {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 4px;
+    }
+    .image-buttons button {
+      background-color: #003366;
+      color: white;
+      font-size: 0.7rem;
+      border: none;
+      padding: 2px 6px;
+      border-radius: 4px;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -155,6 +164,14 @@
       <div class="gallery" id="gallery"></div>
     </div>
   </main>
+
+  <!-- Lightbox -->
+  <div id="lightbox" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:1000;">
+    <div style="position:relative; max-width:90%; max-height:90%;">
+      <img id="lightboxImage" src="" style="width:100%; height:auto; border-radius:8px;">
+      <button onclick="closeLightbox()" style="position:absolute; top:10px; right:10px; background:#fff; color:#000; border:none; padding:5px 10px; font-size:1rem; border-radius:4px; cursor:pointer;">✖</button>
+    </div>
+  </div>
 
   <script>
     const firebaseConfig = {
@@ -237,91 +254,96 @@
     }
 
     function uploadImage() {
-  const file = document.getElementById('imageInput').files[0];
-  const caption = document.getElementById('imageCaption').value.trim();
-  if (!file || !caption) return alert('Bitte ein Bild UND Titel angeben.');
+      const file = document.getElementById('imageInput').files[0];
+      const caption = document.getElementById('imageCaption').value.trim();
+      if (!file || !caption) return alert('Bitte ein Bild UND Titel angeben.');
 
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const base64Image = e.target.result;
-    const timestamp = Date.now();
-    const time = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const entry = {
-      data: base64Image,
-      title: caption,
-      time: time
-    };
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64Image = e.target.result;
+        const timestamp = Date.now();
+        const time = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const entry = {
+          data: base64Image,
+          title: caption,
+          time: time
+        };
 
-    db.ref(`einsaetze/${einsatz}/bilder/${timestamp}`).set(entry)
-      .then(() => {
-        document.getElementById('imageInput').value = "";
-        document.getElementById('imageCaption').value = "";
-        loadGallery(); // Galerie direkt aktualisieren
-      })
-      .catch(error => alert('Fehler: ' + error));
-  };
-  reader.readAsDataURL(file);
-}
+        db.ref(`einsaetze/${einsatz}/bilder/${timestamp}`).set(entry)
+          .then(() => {
+            document.getElementById('imageInput').value = "";
+            document.getElementById('imageCaption').value = "";
+            loadGallery();
+          })
+          .catch(error => alert('Fehler: ' + error));
+      };
+      reader.readAsDataURL(file);
+    }
 
-function loadGallery() {
-  db.ref(`einsaetze/${einsatz}/bilder`).once('value', snapshot => {
-    const galleryDiv = document.getElementById('gallery');
-    galleryDiv.innerHTML = '';
-    const images = snapshot.val();
-    if (images) {
-      Object.entries(images).forEach(([key, { data, title, time }]) => {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'gallery-item';
+    function deleteImage(key) {
+      db.ref(`einsaetze/${einsatz}/bilder/${key}`).remove()
+        .then(() => loadGallery());
+    }
 
-        const captionDiv = document.createElement('div');
-        captionDiv.className = 'caption';
-        captionDiv.innerHTML = `<strong>${title}</strong><br><small>${time}</small>`;
+    function downloadBase64(base64) {
+      const link = document.createElement('a');
+      link.href = base64;
+      link.download = 'einsatzbild.jpg';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
 
-        const img = document.createElement('img');
-        img.src = data;
-        img.alt = title;
-        img.onclick = () => window.open(data, '_blank');
+    function openLightbox(base64img) {
+      const lightbox = document.getElementById('lightbox');
+      const img = document.getElementById('lightboxImage');
+      img.src = base64img;
+      lightbox.style.display = 'flex';
+    }
 
-        const buttons = document.createElement('div');
-        buttons.className = 'image-buttons';
-        buttons.innerHTML = `
-          <button onclick="deleteImage('${key}')">🗑</button>
-          <button onclick="downloadBase64('${data}')">⬇️</button>
-          <button onclick="window.open('${data}', '_blank')">🔍</button>
-        `;
+    function closeLightbox() {
+      document.getElementById('lightbox').style.display = 'none';
+    }
 
-        wrapper.appendChild(captionDiv); // Zuerst Titel und Uhrzeit
-        wrapper.appendChild(img);        // Dann das Bild
-        wrapper.appendChild(buttons);    // Dann die Buttons
+    function loadGallery() {
+      db.ref(`einsaetze/${einsatz}/bilder`).once('value', snapshot => {
+        const galleryDiv = document.getElementById('gallery');
+        galleryDiv.innerHTML = '';
+        const images = snapshot.val();
+        if (images) {
+          Object.entries(images).forEach(([key, { data, title, time }]) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'gallery-item';
 
-        galleryDiv.appendChild(wrapper);
+            const captionDiv = document.createElement('div');
+            captionDiv.className = 'caption';
+            captionDiv.innerHTML = `<strong>${title}</strong><br><small>${time}</small>`;
+
+            const img = document.createElement('img');
+            img.src = data;
+            img.alt = title;
+            img.onclick = () => openLightbox(data);
+
+            const buttons = document.createElement('div');
+            buttons.className = 'image-buttons';
+            buttons.innerHTML = `
+              <button onclick="deleteImage('${key}')">🗑</button>
+              <button onclick="downloadBase64('${data}')">⬇️</button>
+              <button onclick="openLightbox('${data}')">🔍</button>
+            `;
+
+            wrapper.appendChild(captionDiv);
+            wrapper.appendChild(img);
+            wrapper.appendChild(buttons);
+            galleryDiv.appendChild(wrapper);
+          });
+        }
       });
     }
-  });
-}
-    
+
     document.getElementById("einsatzIdDisplay").textContent = einsatz;
     renderData();
     loadGallery();
   </script>
-  function openLightbox(base64img) {
-  const lightbox = document.getElementById('lightbox');
-  const img = document.getElementById('lightboxImage');
-  img.src = base64img;
-  lightbox.style.display = 'flex';
-}
-
-function closeLightbox() {
-  document.getElementById('lightbox').style.display = 'none';
-}
-  <!-- Lightbox-Popup -->
-<div id="lightbox" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
-     background-color:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:1000;">
-  <div style="position:relative; max-width:90%; max-height:90%;">
-    <img id="lightboxImage" src="" style="width:100%; height:auto; border-radius:8px;">
-    <button onclick="closeLightbox()" style="position:absolute; top:10px; right:10px; 
-            background:#fff; color:#000; border:none; padding:5px 10px; font-size:1rem; border-radius:4px; cursor:pointer;">✖</button>
-  </div>
-</div>
 </body>
 </html>
