@@ -161,7 +161,10 @@
       <h2>Bilder vom Einsatz</h2>
       <input type="file" id="imageInput" accept="image/*">
       <input type="text" id="imageCaption" placeholder="Bildtitel eingeben">
-      <button onclick="uploadImage()">Bild hochladen</button>
+      <div id="uploadStatus" style="display:none; font-size: 0.9rem; color: #003366; margin-top: 0.5rem;">
+  ⏳ Bild wird hochgeladen...
+</div>
+<button onclick="uploadImage()">Bild hochladen</button>
       <div class="gallery" id="gallery"></div>
     </div>
   </main>
@@ -263,32 +266,52 @@ function saveData(type) {
       });
     }
 
-    function uploadImage() {
-      const file = document.getElementById('imageInput').files[0];
-      const caption = document.getElementById('imageCaption').value.trim();
-      if (!file || !caption) return alert('Bitte ein Bild UND Titel angeben.');
+  function uploadImage() {
+  const file = document.getElementById('imageInput').files[0];
+  const caption = document.getElementById('imageCaption').value.trim();
+  const status = document.getElementById('uploadStatus');
 
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const base64Image = e.target.result;
-        const timestamp = Date.now();
-        const time = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const entry = {
-          data: base64Image,
-          title: caption,
-          time: time
-        };
+  if (!file || !caption) {
+    alert('Bitte ein Bild UND Titel angeben.');
+    return;
+  }
 
-        db.ref(`einsaetze/${einsatz}/bilder/${timestamp}`).set(entry)
-          .then(() => {
-            document.getElementById('imageInput').value = "";
-            document.getElementById('imageCaption').value = "";
-            loadGallery();
-          })
-          .catch(error => alert('Fehler: ' + error));
-      };
-      reader.readAsDataURL(file);
-    }
+  status.style.display = 'block'; // Anzeige einblenden
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const base64Image = e.target.result;
+    const timestamp = Date.now();
+    const time = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    const entry = {
+      data: base64Image,
+      title: caption,
+      time: time
+    };
+
+    db.ref(`einsaetze/${einsatz}/bilder/${timestamp}`).set(entry)
+      .then(() => {
+        document.getElementById('imageInput').value = "";
+        document.getElementById('imageCaption').value = "";
+        loadGallery();
+        status.style.display = 'none'; // Anzeige ausblenden
+      })
+      .catch(error => {
+        console.error("Fehler beim Speichern:", error);
+        alert('Fehler: ' + error.message);
+        status.style.display = 'none'; // Anzeige ausblenden bei Fehler
+      });
+  };
+
+  reader.onerror = function(err) {
+    console.error("Fehler beim Lesen der Datei:", err);
+    alert("Fehler beim Verarbeiten des Bildes.");
+    status.style.display = 'none'; // Anzeige ausblenden bei Fehler
+  };
+
+  reader.readAsDataURL(file);
+}
 
     function deleteImage(key) {
       db.ref(`einsaetze/${einsatz}/bilder/${key}`).remove()
