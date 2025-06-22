@@ -193,16 +193,21 @@ button.btn-danger {
     color: #333;
   }
 
-  .image-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 0.5rem;
-  }
+.image-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap; /* 🧩 Umbruch ermöglichen */
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+}
 
-  .image-buttons button {
-    font-size: 0.75rem;
-    padding: 4px 8px;
-  }
+.image-buttons button {
+  font-size: 0.75rem;
+  padding: 4px 6px;
+  flex: 1 1 auto;
+  max-width: 32%;
+  min-width: 28%;
+}
 
   /* 💬 Upload-Status */
   #uploadStatus {
