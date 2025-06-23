@@ -174,34 +174,22 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.password-wrapper .btn-inline {
+.password-wrapper .btn-secondary.btn-inline {
   position: absolute;
-  top: 50%;
   right: 0.75rem;
+  top: 50%;
   transform: translateY(-50%);
-}
-
-.password-wrapper button:hover {
-  text-decoration: underline;
-  color: #004080;
-}
-
-.password-wrapper button:focus {
-  outline: 2px solid rgba(0, 51, 102, 0.4);
-  border-radius: 4px;
-}
-    /* Wiederverwendbarer grauer Button wie auf der Unterseite */
-.password-wrapper .btn-secondary {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+  line-height: 1;
   background-color: #666 !important;
   color: white !important;
-  font-size: 0.85rem;
-  padding: 0.4rem 0.75rem !important;
-  border-radius: 8px !important;
   border: none !important;
+  border-radius: 8px !important;
   cursor: pointer;
 }
 
-.password-wrapper .btn-secondary:hover {
+.password-wrapper .btn-secondary.btn-inline:hover {
   background-color: #555 !important;
 }
 
