@@ -119,8 +119,11 @@
 <main>
   <div class="field-container">
     <h2>Neuen Einsatz erstellen</h2>
-    <input type="text" id="einsatzName" placeholder="Einsatzname z. B. albstadt-bergwiese-1">
-    <button onclick="createEinsatz()">Einsatz starten</button>
+    
+<input type="text" id="einsatzName" placeholder="Einsatzname z. B. albstadt-bergwiese-1">
+<input type="text" id="einsatzPasswort" placeholder="Einsatz-Passwort (Pflicht)">
+
+<button onclick="createEinsatz()">Einsatz starten</button>
 
     <div id="output" style="display:none">
       <div class="linkbox">
@@ -136,28 +139,40 @@
   <script>
     let currentUrl = "";
 
-    function createEinsatz() {
-      const einsatzName = document.getElementById("einsatzName").value.trim();
-      if (!einsatzName) {
-        alert("Bitte einen Einsatznamen eingeben.");
-        return;
-      }
-      const origin = window.location.origin + window.location.pathname.replace("index.html", "");
-      const fullUrl = `${origin}einsatz.html?einsatz=${encodeURIComponent(einsatzName)}`;
-      currentUrl = fullUrl;
+   function createEinsatz() {
+  const einsatzName = document.getElementById("einsatzName").value.trim();
+  const einsatzPasswort = document.getElementById("einsatzPasswort").value.trim();
 
-      document.getElementById("einsatzLink").textContent = fullUrl;
-      document.getElementById("einsatzLink").href = fullUrl;
-      document.getElementById("qrcode").innerHTML = "";
+  if (!einsatzName || !einsatzPasswort) {
+    alert("Bitte Einsatzname UND Passwort angeben.");
+    return;
+  }
 
-      const qrContainer = document.getElementById("qrcode");
-      const qrCanvas = document.createElement("div");
-      new QRCode(qrCanvas, fullUrl);
-      qrContainer.appendChild(qrCanvas);
+  const origin = window.location.origin + window.location.pathname.replace("index.html", "");
+  const fullUrl = `${origin}einsatz.html?einsatz=${encodeURIComponent(einsatzName)}`;
 
-      document.getElementById("output").style.display = "block";
-      window.open(fullUrl, '_blank');
-    }
+  // 🔐 Speichere Passwort in Firebase unter diesem Einsatz
+  const db = firebase.database();
+  db.ref(`einsaetze/${einsatzName}/auth`).set({
+    passwort: einsatzPasswort,
+    timestamp: Date.now()
+  });
+
+  // 🔗 Zeige Link + QR
+  document.getElementById("einsatzLink").textContent = fullUrl;
+  document.getElementById("einsatzLink").href = fullUrl;
+  document.getElementById("qrcode").innerHTML = "";
+
+  const qrContainer = document.getElementById("qrcode");
+  const qrCanvas = document.createElement("div");
+  new QRCode(qrCanvas, fullUrl);
+  qrContainer.appendChild(qrCanvas);
+
+  document.getElementById("output").style.display = "block";
+
+  // 🌐 Seite in neuem Tab öffnen
+  window.open(fullUrl, '_blank');
+}
 
     function copyLink() {
       navigator.clipboard.writeText(currentUrl).then(() => {
