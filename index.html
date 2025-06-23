@@ -156,7 +156,7 @@
 }
 .password-wrapper {
   position: relative;
-  display: inline-block;
+  display: block;
   width: 100%;
   max-width: 500px;
   margin: 0.5rem auto;
@@ -191,23 +191,32 @@
   border-radius: 4px;
 }
     /* Wiederverwendbarer grauer Button wie auf der Unterseite */
-.btn-secondary {
-  background-color: #666;
-  color: white;
+.password-wrapper .btn-secondary {
+  background-color: #666 !important;
+  color: white !important;
   font-size: 0.85rem;
-  padding: 0.4rem 0.75rem;
-  border-radius: 8px;
-  border: none;
+  padding: 0.4rem 0.75rem !important;
+  border-radius: 8px !important;
+  border: none !important;
   cursor: pointer;
-  transition: background-color 0.2s ease;
 }
 
-.btn-secondary:hover {
-  background-color: #555;
+.password-wrapper .btn-secondary:hover {
+  background-color: #555 !important;
 }
+
 
 /* Optional: Wenn du willst, dass der Button kleiner & kompakter im Feld sitzt */
 .btn-inline {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  transform: translateY(-50%);
+  padding: 0.3rem 0.75rem;
+  font-size: 0.8rem;
+  line-height: 1.2;
+}
+.password-wrapper .btn-secondary.btn-inline {
   position: absolute;
   top: 50%;
   right: 0.75rem;
