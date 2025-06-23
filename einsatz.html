@@ -138,7 +138,7 @@
     background-color: #555;
   }
 
-  .btn-danger {
+  . {
     background-color: #c10000;
     color: white;
   }
@@ -399,7 +399,7 @@ input[type="text"] {
       <input type="password" id="deletePasswordInput" placeholder="Einsatzpasswort" />
       <div class="overlay-buttons">
         <button class="btn-secondary" onclick="cancelDelete()">Abbrechen</button>
-        <button class="btn-danger" onclick="confirmDelete()">Löschen</button>
+        <button id="confirmDeleteBtn" class="btn-danger">Löschen</button>
       </div>
     </div>
   </div>
@@ -695,6 +695,7 @@ function confirmDelete() {
     }
   });
 }
+document.getElementById("confirmDeleteBtn").addEventListener("click", confirmDelete);
 
   </script>
 </body>
