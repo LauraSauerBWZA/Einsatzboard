@@ -19,17 +19,33 @@
   }
 
   header {
-    background-color: #003366;
-    color: white;
-    padding: 1.5rem 1rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-  }
+  background-color: #003366;
+  color: white;
+  padding: 1.5rem 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  text-align: center; /* optional */
+}
+  .header-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Abstand zwischen Logo und Text */
+}
 
-  .logo {
-    height: 44px;
-    vertical-align: middle;
-    margin-right: 12px;
-  }
+.logo {
+  height: 44px;
+  vertical-align: middle;
+}
+
+.headline {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.logo {
+  height: 44px;
+  vertical-align: middle;
+}
 
   main {
     padding: 2rem 1rem;
@@ -294,10 +310,13 @@ input[type="text"] {
 
 </head>
 <body>
-  <header>
+<header>
+  <div class="header-content">
     <img src="logo.png" alt="Bergwacht Logo" class="logo">
-    <span style="font-size: 1.5rem; font-weight: bold;">Einsatzboard – <span id="einsatzIdDisplay" style="color: #c10000;"></span></span>
-  </header>
+    <span class="headline">Einsatzboard – <span id="einsatzIdDisplay" style="color: #c10000;"></span></span>
+  </div>
+</header>
+
   <main>
     <div class="field-container">
       <h2>Funktion / Funkrufnamen</h2>
