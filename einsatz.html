@@ -392,18 +392,6 @@ input[type="text"] {
       <button class="btn-secondary" onclick="closeLightbox()" style="position:absolute; top:10px; right:10px;">✖</button>
     </div>
   </div>
-  
-   <!-- 🔐 Passwortabfrage-Overlay -->
-  <div id="passwordOverlay" style="display: none;" class="overlay">
-    <div class="overlay-content">
-      <p style="margin-bottom: 1rem;">Zum Löschen bitte das Einsatzpasswort eingeben:</p>
-      <input type="password" id="deletePasswordInput" placeholder="Einsatzpasswort" />
-      <div class="overlay-buttons">
-        <button class="btn-secondary" onclick="cancelDelete()">Abbrechen</button>
-        <button id="confirmDeleteBtn" class="btn-danger">Löschen</button>
-      </div>
-    </div>
-  </div>
 
   <!-- 🔧 JavaScript -->
   <script>
@@ -671,15 +659,6 @@ function deleteEntry(type, key) {
   document.getElementById("passwordOverlay").style.display = "flex";
 }
 
-function cancelDelete() {
-  deleteInfo = null;
-  document.getElementById("passwordOverlay").style.display = "none";
-}
-
-function confirmDelete() {
-  const enteredPass = document.getElementById("deletePasswordInput").value;
-  if (!enteredPass || !deleteInfo) return;
-
   const passRef = db.ref(`einsaetze/${einsatz}/auth/passwort`);
   passRef.once("value", snapshot => {
     const correctPass = snapshot.val();
@@ -703,5 +682,18 @@ function confirmDelete() {
 });
 
   </script>
+  
+<!-- 🔐 Kontextbasiertes Passwort-Overlay -->
+<div id="passwordPrompt" class="password-popup hidden">
+  <div class="popup-box">
+    <p>Zum Löschen bitte das Einsatzpasswort eingeben:</p>
+    <input type="password" id="passwordInput" placeholder="Passwort">
+    <div class="popup-actions">
+      <button class="btn-secondary" onclick="cancelPassword()">Abbrechen</button>
+      <button class="btn-danger" onclick="confirmPassword()">OK</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
