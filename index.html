@@ -111,8 +111,10 @@
   }
 
   #qrcode {
-    margin-top: 2rem;
-  }
+  margin: 2rem auto 0 auto; /* oben 2rem Abstand, horizontal zentriert */
+  display: flex;
+  justify-content: center;
+}
 
   @media (max-width: 600px) {
     input[type="text"], button {
