@@ -334,19 +334,6 @@ input[type="text"] {
 </head>
 <body>
 
-  <!-- 🔐 Passwortabfrage-Overlay -->
-  <div id="passwordOverlay" style="display: none;" class="overlay">
-    <div class="overlay-content">
-      <p style="margin-bottom: 1rem;">Zum Löschen bitte das Einsatzpasswort eingeben:</p>
-      <input type="password" id="deletePasswordInput" placeholder="Einsatzpasswort" />
-      <div class="overlay-buttons">
-        <button class="btn-secondary" onclick="cancelDelete()">Abbrechen</button>
-        <button class="btn-danger" onclick="confirmDelete()">Löschen</button>
-      </div>
-    </div>
-  </div>
-
-<body>
 <header>
   <div class="header-content">
     <img src="logo.png" alt="Bergwacht Logo" class="logo">
@@ -404,8 +391,20 @@ input[type="text"] {
       <button class="btn-secondary" onclick="closeLightbox()" style="position:absolute; top:10px; right:10px;">✖</button>
     </div>
   </div>
-</body>
+  
+   <!-- 🔐 Passwortabfrage-Overlay -->
+  <div id="passwordOverlay" style="display: none;" class="overlay">
+    <div class="overlay-content">
+      <p style="margin-bottom: 1rem;">Zum Löschen bitte das Einsatzpasswort eingeben:</p>
+      <input type="password" id="deletePasswordInput" placeholder="Einsatzpasswort" />
+      <div class="overlay-buttons">
+        <button class="btn-secondary" onclick="cancelDelete()">Abbrechen</button>
+        <button class="btn-danger" onclick="confirmDelete()">Löschen</button>
+      </div>
+    </div>
+  </div>
 
+  <!-- 🔧 JavaScript -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyC09wlAw-fzzThLjRoS_z_NSFvYB2TP5Bc",
