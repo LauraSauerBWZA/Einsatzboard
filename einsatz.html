@@ -459,23 +459,6 @@ function saveData(type) {
   });
 }
 
-  function deleteEntry(type, key) {
-  const userPass = prompt("Zum Löschen bitte das Einsatzpasswort eingeben:");
-  if (!userPass) return;
-
-  const passRef = db.ref(`einsaetze/${einsatz}/auth/passwort`);
-  passRef.once("value", snapshot => {
-    const correctPass = snapshot.val();
-    if (userPass === correctPass) {
-      if (!confirm("Eintrag wirklich löschen?")) return;
-      const refPath = `einsaetze/${einsatz}/${type}/${key}`;
-      db.ref(refPath).remove();
-    } else {
-      alert("❌ Falsches Passwort. Der Eintrag wurde nicht gelöscht.");
-    }
-  });
-}
-
 function renderData() {
   const sections = [
     { key: 'funkkanal', containerId: 'funkkanalDisplay' },
