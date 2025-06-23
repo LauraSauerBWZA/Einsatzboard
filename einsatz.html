@@ -628,7 +628,6 @@ const day = String(today.getDate()).padStart(2, '0');
 const month = String(today.getMonth() + 1).padStart(2, '0');
 const year = today.getFullYear();
 const datum = `${day}.${month}.${year}`;
-document.getElementById("einsatzIdDisplay").textContent = `${einsatz} (${datum})`;
 
     renderData();
     function copyCoord(text, buttonEl) {
@@ -694,8 +693,12 @@ function confirmDelete() {
       alert("❌ Falsches Passwort.");
     }
   });
-// Test: Overlay direkt anzeigen (zum Debuggen)
-document.getElementById("passwordOverlay").style.display = "flex";
+}
+window.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("einsatzIdDisplay").textContent = `${einsatz} (${datum})`;
+  renderData();
+  loadGallery();
+});
 
   </script>
 </body>
