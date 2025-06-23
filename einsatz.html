@@ -138,10 +138,11 @@
     background-color: #555;
   }
 
-  . {
-    background-color: #c10000;
-    color: white;
-  }
+.btn-danger {
+  background-color: #c10000;
+  color: white;
+}
+
 /* 🧯 Kompakter Stil für alle "Löschen"-Buttons */
 button.btn-danger {
   font-size: 0.85rem;
@@ -693,13 +694,12 @@ function confirmDelete() {
       alert("❌ Falsches Passwort.");
     }
   });
-}window.addEventListener("DOMContentLoaded", () => {
+}
+   window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("einsatzIdDisplay").textContent = `${einsatz} (${datum})`;
+  document.getElementById("confirmDeleteBtn").addEventListener("click", confirmDelete);
   renderData();
   loadGallery();
-
-  // 🔧 Event-Listener für Löschen-Button NACHDEM DOM geladen ist
-  document.getElementById("confirmDeleteBtn").addEventListener("click", confirmDelete);
 });
 
   </script>
