@@ -124,13 +124,6 @@
       padding: 1.5rem 1rem;
     }
   }
-    .password-wrapper {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-  max-width: 500px;
-  margin: 0.5rem auto;
-}
 
 .password-wrapper input[type="password"],
 .password-wrapper input[type="text"] {
@@ -161,6 +154,48 @@
 .password-wrapper button:hover {
   color: #004080;
 }
+.password-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  max-width: 500px;
+  margin: 0.5rem auto;
+}
+
+.password-wrapper input[type="password"],
+.password-wrapper input[type="text"] {
+  width: 100%;
+  font-size: 1rem;
+  padding: 0.9rem 6rem 0.9rem 1rem; /* Platz rechts für Button */
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: white;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.password-wrapper button {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 0.85rem;
+  color: #003366;
+  cursor: pointer;
+  padding: 0;
+}
+
+.password-wrapper button:hover {
+  text-decoration: underline;
+  color: #004080;
+}
+
+.password-wrapper button:focus {
+  outline: 2px solid rgba(0, 51, 102, 0.4);
+  border-radius: 4px;
+}
 
 </style>
 
@@ -174,11 +209,11 @@
   <div class="field-container">
     <h2>Neuen Einsatz erstellen</h2>
     
-<input type="text" id="einsatzName" placeholder="Einsatzname z. B. albstadt-bergwiese-1">
+<input type="text" id="einsatzName" placeholder="Einsatzname z. B. Zeller Horn">
 <div class="password-wrapper">
   <input type="password" id="einsatzPasswort" placeholder="Einsatz-Passwort (Pflicht)">
   <button type="button" id="togglePasswort" aria-label="Passwort anzeigen" onclick="togglePassword()">
-    👁
+    <span class="pw-label">anzeigen</span>
   </button>
 </div>
 
@@ -253,14 +288,15 @@
     function togglePassword() {
   const input = document.getElementById("einsatzPasswort");
   const button = document.getElementById("togglePasswort");
+  const label = button.querySelector(".pw-label");
 
   if (input.type === "password") {
     input.type = "text";
-    button.textContent = "🙈";
+    label.textContent = "verbergen";
     button.setAttribute("aria-label", "Passwort verbergen");
   } else {
     input.type = "password";
-    button.textContent = "👁";
+    label.textContent = "anzeigen";
     button.setAttribute("aria-label", "Passwort anzeigen");
   }
 }
