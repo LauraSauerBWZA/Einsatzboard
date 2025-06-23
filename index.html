@@ -191,15 +191,41 @@
 .password-wrapper .btn-secondary.btn-inline:hover {
   background-color: #555 !important;
 }
+header {
+  background-color: #003366;
+  color: white;
+  padding: 1.5rem 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px; /* Abstand zwischen Logo und Text */
+}
+
+.logo {
+  height: 44px;
+  vertical-align: middle;
+}
+
+.headline {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
 
 </style>
 
 </head>
 <body>
   <header>
+  <div class="header-content">
     <img src="./logo.png" alt="Bergwacht Logo" class="logo">
-    <span style="font-size: 1.5rem; font-weight: bold;">Einsatz erstellen</span>
-  </header>
+    <span class="headline">Einsatz erstellen</span>
+  </div>
+</header>
+  
 <main>
   <div class="field-container">
     <h2>Neuen Einsatz erstellen</h2>
