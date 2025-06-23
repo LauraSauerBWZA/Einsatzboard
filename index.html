@@ -6,48 +6,132 @@
   <title>Einsatz erstellen – Bergwacht</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; background-color: #f0f4f8; margin: 0; padding: 0; text-align: center; }
-    header { background-color: #003366; color: white; padding: 1rem; }
-    .logo { height: 40px; vertical-align: middle; margin-right: 10px; }
-    main { padding: 2rem; }
-    input, button {
-      padding: 0.8rem; font-size: 1rem; margin: 1rem auto; width: 80%; max-width: 400px;
+  /* 🌄 Modernisiertes Design – Bergwacht Stil */
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background-color: #f0f4f8;
+    color: #111;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
+
+  header {
+    background-color: #003366;
+    color: white;
+    padding: 1.5rem 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  }
+
+  .logo {
+    height: 44px;
+    vertical-align: middle;
+    margin-right: 12px;
+  }
+
+  main {
+    padding: 2rem 1rem;
+  }
+
+  .field-container {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    margin: 2rem auto;
+    max-width: 600px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    text-align: center;
+  }
+
+  input[type="text"] {
+    font-size: 1rem;
+    padding: 0.9rem 1rem;
+    width: 100%;
+    max-width: 500px;
+    margin: 0.5rem auto;
+    box-sizing: border-box;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  input[type="text"]:hover {
+    border-color: #999;
+  }
+
+  input[type="text"]:focus {
+    border-color: #003366;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.2);
+  }
+
+  button {
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 0.9rem 1.2rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background-color: #003366;
+    color: white;
+    transition: all 0.2s ease;
+    margin-top: 1rem;
+  }
+
+  button:hover {
+    background-color: #004080;
+  }
+
+  .linkbox {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #e6f0ff;
+    border-left: 5px solid #003366;
+    border-radius: 8px;
+    word-break: break-word;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  #qrcode {
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 600px) {
+    input[type="text"], button {
+      font-size: 1rem;
+      padding: 0.9rem;
     }
-    input {
-      background-color: #ffffff; border: 2px solid #cccccc; border-radius: 4px;
+
+    .field-container {
+      padding: 1.5rem 1rem;
     }
-    button {
-      background-color: #003366; color: white; border: none; cursor: pointer; border-radius: 4px;
-    }
-    button:hover { opacity: 0.9; }
-    #qrcode { margin-top: 2rem; }
-    .linkbox {
-      margin: 1rem auto; max-width: 400px; word-break: break-word; background: #e6f0ff;
-      padding: 1rem; border-left: 5px solid #003366; border-radius: 4px;
-    }
-    .highlight-input {
-      background-color: #fffbe6;
-    }
-  </style>
+  }
+</style>
+
 </head>
 <body>
   <header>
     <img src="./logo.png" alt="Bergwacht Logo" class="logo">
     <span style="font-size: 1.5rem; font-weight: bold;">Einsatz erstellen</span>
   </header>
-  <main>
-    <input type="text" id="einsatzName" class="highlight-input" placeholder="Einsatzname z. B. albstadt-bergwiese-1">
+<main>
+  <div class="field-container">
+    <h2>Neuen Einsatz erstellen</h2>
+    <input type="text" id="einsatzName" placeholder="Einsatzname z. B. albstadt-bergwiese-1">
     <button onclick="createEinsatz()">Einsatz starten</button>
 
     <div id="output" style="display:none">
       <div class="linkbox">
-        <a id="einsatzLink" href="#" target="_blank"></a>
+        <a id="einsatzLink" href="#" target="_blank"></a><br>
         <button onclick="copyLink()">Link kopieren</button>
         <button onclick="downloadQR()">QR-Code herunterladen</button>
       </div>
       <div id="qrcode"></div>
     </div>
-  </main>
+  </div>
+</main>
 
   <script>
     let currentUrl = "";
