@@ -693,15 +693,14 @@ function confirmDelete() {
       alert("❌ Falsches Passwort.");
     }
   });
-}
-window.addEventListener("DOMContentLoaded", () => {
+}window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("einsatzIdDisplay").textContent = `${einsatz} (${datum})`;
   renderData();
   loadGallery();
-});
 
-// 🔧 Event-Listener für Passwort-Löschen-Button aktivieren
-document.getElementById("confirmDeleteBtn").addEventListener("click", confirmDelete);
+  // 🔧 Event-Listener für Löschen-Button NACHDEM DOM geladen ist
+  document.getElementById("confirmDeleteBtn").addEventListener("click", confirmDelete);
+});
 
   </script>
 </body>
