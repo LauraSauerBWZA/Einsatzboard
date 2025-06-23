@@ -5,6 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Einsatz erstellen – Bergwacht</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyC09wlAw-fzzThLjRoS_z_NSFvYB2TP5Bc",
+    authDomain: "einsatzboard.firebaseapp.com",
+    databaseURL: "https://einsatzboard-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "einsatzboard",
+    storageBucket: "einsatzboard.appspot.com",
+    messagingSenderId: "275404072041",
+    appId: "1:275404072041:web:e6123fc9c5632cf2652ef8"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+</script>
   <style>
   /* 🌄 Modernisiertes Design – Bergwacht Stil */
 
