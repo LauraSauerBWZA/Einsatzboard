@@ -43,11 +43,6 @@
   font-weight: bold;
 }
 
-.logo {
-  height: 44px;
-  vertical-align: middle;
-}
-
   main {
     padding: 2rem 1rem;
   }
@@ -306,23 +301,6 @@ button,
 input[type="text"] {
   transition: all 0.2s ease-in-out;
 }
-
-</style>
-
-</head>
-<body>
-.gallery-item img {
-  width: 100%;
-  border-radius: 4px;
-  cursor: pointer;
-  object-fit: cover;
-  height: 100px;
-}
-/* 🌟 Übergänge für Buttons & Inputs */
-button,
-input[type="text"] {
-  transition: all 0.2s ease-in-out;
-}
 /* 🔐 Passwortabfrage-Overlay */
 .overlay {
   position: fixed;
@@ -360,28 +338,22 @@ input[type="text"] {
 }
 
 </style>
-
 </head>
+<body>
+
   <!-- 🔐 Passwortabfrage-Overlay -->
-<div id="passwordOverlay" style="display: none;" class="overlay">
-  <div class="overlay-content">
-    <p style="margin-bottom: 1rem;">Zum Löschen bitte das Einsatzpasswort eingeben:</p>
-    <input type="password" id="deletePasswordInput" placeholder="Einsatzpasswort" />
-    <div class="overlay-buttons">
-      <button class="btn-secondary" onclick="cancelDelete()">Abbrechen</button>
-      <button class="btn-danger" onclick="confirmDelete()">Löschen</button>
+  <div id="passwordOverlay" style="display: none;" class="overlay">
+    <div class="overlay-content">
+      <p style="margin-bottom: 1rem;">Zum Löschen bitte das Einsatzpasswort eingeben:</p>
+      <input type="password" id="deletePasswordInput" placeholder="Einsatzpasswort" />
+      <div class="overlay-buttons">
+        <button class="btn-secondary" onclick="cancelDelete()">Abbrechen</button>
+        <button class="btn-danger" onclick="confirmDelete()">Löschen</button>
+      </div>
     </div>
   </div>
-</div>
 
 <body>
-<header>
-  <div class="header-content">
-    <img src="logo.png" alt="Bergwacht Logo" class="logo">
-    <span class="headline">Einsatzboard – <span id="einsatzIdDisplay" style="color: #c10000;"></span></span>
-  </div>
-</header>
-
 <header>
   <div class="header-content">
     <img src="logo.png" alt="Bergwacht Logo" class="logo">
