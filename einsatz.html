@@ -745,9 +745,16 @@
       const val = snapshot.val();
       let sectionHTML = `<section style="margin-bottom: 2rem;">`;
       sectionHTML += `
-  <div style="background:#f0f4f8; padding:0.6rem 1rem; border-radius: 8px; margin-bottom: 0.75rem; box-shadow: inset 0 -1px 0 #ddd;">
-    <h4 style="font-size: 1.1rem; margin: 0;">${label}</h4>
-  </div>
+  <h4 style="
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 2rem 0 0.5rem;
+    padding-top: 1rem;
+    border-top: 2px solid #ccc;
+    color: #003366;
+  ">
+    ${label}
+  </h4>
 `;
       
       if (!val) {
