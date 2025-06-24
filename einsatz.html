@@ -595,7 +595,7 @@
           const buttons = document.createElement('div');
           buttons.className = 'image-buttons';
           buttons.innerHTML = `
-            <button onclick="deleteImage('${key}')">🗑</button>
+            <button onclick="deleteImageWithPassword('${key}')">🗑</button>
             <button onclick="downloadBase64('${data}')">⬇️</button>
             <button onclick="openLightbox('${data}')">🔍</button>
           `;
@@ -640,6 +640,13 @@
     });
   }
 
+  // 🆕 Bild löschen mit Passwortabfrage
+  function deleteImageWithPassword(key) {
+    deleteInfo = { type: 'bilder', key };
+    document.getElementById("deletePasswordInput").value = "";
+    document.getElementById("passwordOverlay").style.display = "flex";
+  }
+
   let deleteInfo = null;
 
   function deleteEntry(type, key) {
@@ -648,18 +655,29 @@
     document.getElementById("passwordOverlay").style.display = "flex";
   }
 
-  function confirmDelete() {
+   function confirmDelete() {
     const enteredPass = document.getElementById("deletePasswordInput").value;
     const passRef = db.ref(`einsaetze/${einsatz}/auth/passwort`);
     passRef.once("value", snapshot => {
       const correctPass = snapshot.val();
       if (enteredPass === correctPass) {
         const { type, key } = deleteInfo;
-        const refPath = `einsaetze/${einsatz}/${type}/${key}`;
-        db.ref(refPath).remove().then(() => {
-          document.getElementById("passwordOverlay").style.display = "none";
-          deleteInfo = null;
-        });
+        let refPath;
+
+        if (type === 'bilder') {
+          refPath = `einsaetze/${einsatz}/bilder/${key}`;
+          db.ref(refPath).remove().then(() => {
+            loadGallery();
+            document.getElementById("passwordOverlay").style.display = "none";
+            deleteInfo = null;
+          });
+        } else {
+          refPath = `einsaetze/${einsatz}/${type}/${key}`;
+          db.ref(refPath).remove().then(() => {
+            document.getElementById("passwordOverlay").style.display = "none";
+            deleteInfo = null;
+          });
+        }
       } else {
         alert("❌ Falsches Passwort.");
       }
