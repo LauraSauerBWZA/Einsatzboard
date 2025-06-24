@@ -327,6 +327,23 @@
 </header>
 
 <main>
+  
+  <!-- 📋 Einsatzübersicht anzeigen -->
+<div style="text-align:center; margin-top: 1rem;">
+  <button class="btn-primary" onclick="loadSummary()">Einsatzübersicht</button>
+</div>
+
+<!-- 📋 Overlay für Einsatzübersicht -->
+<div id="summaryOverlay" class="overlay" style="display:none;">
+  <div class="overlay-content" style="max-height: 80vh; overflow-y: auto;">
+    <h3 style="margin-top: 0;">📋 Einsatzübersicht</h3>
+    <div id="summaryContent" style="text-align: left; font-size: 0.95rem;"></div>
+    <div class="overlay-buttons" style="margin-top: 1.5rem;">
+      <button class="btn-secondary" onclick="closeSummary()">Schließen</button>
+    </div>
+  </div>
+</div>
+
   <div class="field-container">
     <h2>Funktion / Funkrufnamen</h2>
     <div id="ansprechpartnerDisplay"></div>
@@ -707,6 +724,46 @@
     renderData();
     loadGallery();
   });
+
+    function loadSummary() {
+  const contentDiv = document.getElementById("summaryContent");
+  contentDiv.innerHTML = "<em>Lade Daten...</em>";
+  document.getElementById("summaryOverlay").style.display = "flex";
+
+  const paths = {
+    "📡 Funkkanäle": "funkkanal",
+    "🧑‍🚒 Ansprechpartner": "ansprechpartner",
+    "⚠️ Hinweise": "hinweis",
+    "📍 Koordinaten": "koordinaten"
+  };
+
+  const promises = Object.entries(paths).map(([label, path]) => {
+    return db.ref(`einsaetze/${einsatz}/${path}`).once("value").then(snapshot => {
+      const val = snapshot.val();
+      if (!val) return `<h4>${label}</h4><p><em>Keine Daten</em></p>`;
+
+      let html = `<h4>${label}</h4><ul>`;
+      Object.values(val).forEach(entry => {
+        if (typeof entry === "object") {
+          html += `<li><strong>${entry.ort}</strong><br><span style="font-size:0.9rem;">${entry.info}</span></li>`;
+        } else {
+          html += `<li>${entry}</li>`;
+        }
+      });
+      html += "</ul>";
+      return html;
+    });
+  });
+
+  Promise.all(promises).then(results => {
+    contentDiv.innerHTML = results.join("<hr>");
+  });
+}
+
+function closeSummary() {
+  document.getElementById("summaryOverlay").style.display = "none";
+}
+
 </script>
   
 </body>
