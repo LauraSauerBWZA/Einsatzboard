@@ -6,7 +6,8 @@
   <title>Einsatzboard – Bergwacht</title>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<style>
+
+  <style>
   /* 🌄 Modernisiertes Einsatzboard-Design mit konsistentem Stil */
 
   body {
@@ -19,29 +20,29 @@
   }
 
   header {
-  background-color: #003366;
-  color: white;
-  padding: 1.5rem 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-  text-align: center; /* optional */
-}
+    background-color: #003366;
+    color: white;
+    padding: 1.5rem 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    text-align: center;
+  }
 
-.header-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px; /* Abstand zwischen Logo und Text */
-}
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
 
-.logo {
-  height: 44px;
-  vertical-align: middle;
-}
+  .logo {
+    height: 44px;
+    vertical-align: middle;
+  }
 
-.headline {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
+  .headline {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
 
   main {
     padding: 2rem 1rem;
@@ -50,7 +51,7 @@
   h2 {
     color: #003366;
     font-size: 1.25rem;
-    margin: 1.5rem 0 1rem 0;
+    margin: 1.5rem 0 1rem;
   }
 
   /* 📦 Eingabecontainer */
@@ -60,7 +61,7 @@
     background: white;
     border-radius: 12px;
     padding: 2rem 1.5rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* vereinheitlichter Schatten */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     text-align: left;
   }
 
@@ -71,7 +72,7 @@
     padding: 1rem;
     margin-bottom: 1rem;
     border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* gleich wie field-container */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -90,7 +91,7 @@
     background-color: white;
     border: 1px solid #ccc;
     border-radius: 8px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: all 0.2s ease-in-out;
   }
 
   input[type="text"]:hover {
@@ -103,7 +104,7 @@
     box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.2);
   }
 
-  /* 🔘 Button-Grunddesign */
+  /* 🔘 Buttons */
   button {
     font-size: 1rem;
     font-weight: 500;
@@ -111,7 +112,7 @@
     border-radius: 8px;
     border: none;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s ease-in-out;
   }
 
   button:focus {
@@ -124,7 +125,6 @@
     background-color: #003366;
     color: white;
   }
-
   .btn-primary:hover {
     background-color: #004080;
   }
@@ -132,57 +132,40 @@
   .btn-secondary {
     background-color: #666;
     color: white;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.75rem;
+    line-height: 1.2;
   }
-
   .btn-secondary:hover {
     background-color: #555;
   }
 
-.btn-danger {
-  background-color: #c10000;
-  color: white;
-}
-
-/* 🧯 Kompakter Stil für alle "Löschen"-Buttons */
-button.btn-danger {
-  font-size: 0.85rem;
-  padding: 0.4rem 0.75rem;
-  line-height: 1.2;
-}
-
+  .btn-danger {
+    background-color: #c10000;
+    color: white;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.75rem;
+    line-height: 1.2;
+  }
   .btn-danger:hover {
     background-color: #990000;
   }
-  /* 🎛 Einheitlicher Stil für graue "Löschen"-Buttons */
-button.btn-secondary {
-  background-color: #666;
-  color: white;
-  font-size: 0.85rem;
-  padding: 0.4rem 0.75rem;
-  line-height: 1.2;
-}
-
-button.btn-secondary:hover {
-  background-color: #555;
-}
 
   /* 🔢 Button-Gruppen */
   .entry-buttons button {
+    position: relative;
     font-size: 0.85rem;
     padding: 0.5rem 0.75rem;
     margin-left: 0.5rem;
   }
-  .entry-buttons button {
-  position: relative;
-  overflow: visible;
-}
+
   .field-container button {
-  display: block;
-  width: auto;
-  min-width: 160px;
-  margin-top: 0.5rem;
-  margin-left: 0;
-}
+    display: block;
+    width: auto;
+    min-width: 160px;
+    margin-top: 0.5rem;
+    margin-left: 0;
+  }
 
   /* 🖼 Galerie */
   .gallery {
@@ -198,7 +181,7 @@ button.btn-secondary:hover {
     width: 140px;
     background-color: white;
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* einheitlich */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     padding: 0.5rem;
     text-align: center;
     transition: transform 0.2s ease;
@@ -222,23 +205,22 @@ button.btn-secondary:hover {
     color: #333;
   }
 
-.image-buttons {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap; /* 🧩 Umbruch ermöglichen */
-  gap: 0.25rem;
-  margin-top: 0.5rem;
-}
+  .image-buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+  }
 
-.image-buttons button {
-  font-size: 0.75rem;
-  padding: 4px 6px;
-  flex: 1 1 auto;
-  max-width: 32%;
-  min-width: 28%;
-}
+  .image-buttons button {
+    font-size: 0.75rem;
+    padding: 4px 6px;
+    flex: 1 1 auto;
+    max-width: 32%;
+    min-width: 28%;
+  }
 
-  /* 💬 Upload-Status */
   #uploadStatus {
     font-size: 0.95rem;
     color: #003366;
@@ -275,9 +257,46 @@ button.btn-secondary:hover {
     cursor: pointer;
   }
 
+  /* 🔐 Passwortabfrage-Overlay */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+
+  .overlay-content {
+    background: white;
+    padding: 2rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    text-align: center;
+    max-width: 320px;
+    width: 90%;
+  }
+
+  .overlay-content input[type="password"] {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+
+  .overlay-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+
   /* 📱 Responsive */
   @media (max-width: 600px) {
-    input[type="text"], button {
+    input[type="text"],
+    button {
       font-size: 1rem;
       padding: 0.9rem;
     }
@@ -289,50 +308,11 @@ button.btn-secondary:hover {
     .gallery-item {
       width: 100px;
     }
+  }
 
-/* 🌟 Übergänge für Buttons & Inputs */
-button,
-input[type="text"] {
-  transition: all 0.2s ease-in-out;
-}
-/* 🔐 Passwortabfrage-Overlay */
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-.overlay-content {
-  background: white;
-  padding: 2rem 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-  text-align: center;
-  max-width: 320px;
-  width: 90%;
-}
-
-.overlay-content input[type="password"] {
-  width: 100%;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-}
-
-.overlay-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-}
-
-</style>
+  </style>
 </head>
+
 <body>
 
 <header>
@@ -342,358 +322,370 @@ input[type="text"] {
   </div>
 </header>
 
-  <main>
-    <div class="field-container">
-      <h2>Funktion / Funkrufnamen</h2>
-      <div id="ansprechpartnerDisplay"></div>
-      <input type="text" id="ansprechName" placeholder="Funktion - z.B. EVD Bergwacht">
-      <input type="text" id="ansprechRuf" placeholder="Funkrufname- z. B. Bergwacht 5">
-      <button class="btn-primary" onclick="saveData('ansprechpartner')">Speichern</button>
-    </div>
-
-    <div class="field-container">
-      <h2>Funkkanäle</h2>
-      <div id="funkkanalDisplay"></div>
-      <input type="text" id="funkkanal" placeholder="z.B. HO BL 06 SB6">
-      <button class="btn-primary" onclick="saveData('funkkanal')">Funkkanal speichern</button>
-    </div>
-
-    <div class="field-container">
-      <h2>Hinweise</h2>
-      <div id="hinweisDisplay"></div>
-      <input type="text" id="hinweis" placeholder="Besondere Hinweise (Eigenschutz, Gelände usw.)">
-      <button class="btn-primary" onclick="saveData('hinweis')">Hinweis speichern</button>
-    </div>
-
-    <div class="field-container">
-      <h2>Koordinaten</h2>
-      <div id="koordDisplay"></div>
-      <input type="text" id="koord" placeholder="Koordinaten z. B. ///W3W, UTM, GPS">
-      <input type="text" id="koordInfo" placeholder="Info zur Koordinate">
-      <button class="btn-primary" onclick="saveData('koordinaten')">Koordinate speichern</button>
-    </div>
-
-    <div class="field-container">
-      <h2>Upload Screenshot / Bilder</h2>
-      <input type="file" id="imageInput" accept="image/*">
-      <input type="text" id="imageCaption" placeholder="Bildtitel eingeben">
-      <div id="uploadStatus" style="display:none; font-size: 0.9rem; color: #003366; margin-top: 0.5rem;">
-        ⏳ Bild wird hochgeladen...
-      </div>
-      <button class="btn-primary" onclick="uploadImage()">Bild hochladen</button>
-      <div class="gallery" id="gallery"></div>
-    </div>
-  </main>
-
-  <!-- Lightbox -->
-  <div id="lightbox" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:1000;">
-    <div style="position:relative; max-width:90%; max-height:90%;">
-      <img id="lightboxImage" src="" style="width:100%; height:auto; border-radius:8px;">
-      <button class="btn-secondary" onclick="closeLightbox()" style="position:absolute; top:10px; right:10px;">✖</button>
-    </div>
+<main>
+  <div class="field-container">
+    <h2>Funktion / Funkrufnamen</h2>
+    <div id="ansprechpartnerDisplay"></div>
+    <input type="text" id="ansprechName" placeholder="Funktion - z.B. EVD Bergwacht">
+    <input type="text" id="ansprechRuf" placeholder="Funkrufname- z. B. Bergwacht 5">
+    <button class="btn-primary" onclick="saveData('ansprechpartner')">Speichern</button>
   </div>
 
-  <!-- 🔧 JavaScript -->
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyC09wlAw-fzzThLjRoS_z_NSFvYB2TP5Bc",
-      authDomain: "einsatzboard.firebaseapp.com",
-      databaseURL: "https://einsatzboard-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "einsatzboard",
-      storageBucket: "einsatzboard.appspot.com",
-      messagingSenderId: "275404072041",
-      appId: "1:275404072041:web:e6123fc9c5632cf2652ef8"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+  <div class="field-container">
+    <h2>Funkkanäle</h2>
+    <div id="funkkanalDisplay"></div>
+    <input type="text" id="funkkanal" placeholder="z.B. HO BL 06 SB6">
+    <button class="btn-primary" onclick="saveData('funkkanal')">Funkkanal speichern</button>
+  </div>
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const einsatz = urlParams.get("einsatz");
-    if (!einsatz) {
-      document.body.innerHTML = "<p style='padding:2rem;'>Kein gültiger Einsatz ausgewählt oder Parameter fehlt.</p>";
-      throw new Error("Kein Einsatzparameter");
-    }
+  <div class="field-container">
+    <h2>Hinweise</h2>
+    <div id="hinweisDisplay"></div>
+    <input type="text" id="hinweis" placeholder="Besondere Hinweise (Eigenschutz, Gelände usw.)">
+    <button class="btn-primary" onclick="saveData('hinweis')">Hinweis speichern</button>
+  </div>
 
-function saveData(type) {
-  const refPath = `einsaetze/${einsatz}/${type}`;
-  let value;
+  <div class="field-container">
+    <h2>Koordinaten</h2>
+    <div id="koordDisplay"></div>
+    <input type="text" id="koord" placeholder="Koordinaten z. B. ///W3W, UTM, GPS">
+    <input type="text" id="koordInfo" placeholder="Info zur Koordinate">
+    <button class="btn-primary" onclick="saveData('koordinaten')">Koordinate speichern</button>
+  </div>
 
-  if (type === 'koordinaten') {
-    const ort = document.getElementById("koord").value.trim();
-    const info = document.getElementById("koordInfo").value.trim();
-    if (!ort || !info) return;
-    value = { ort, info };
-  } else if (type === 'ansprechpartner') {
-    const name = document.getElementById("ansprechName").value.trim();
-    const ruf = document.getElementById("ansprechRuf").value.trim();
-    if (!name || !ruf) return;
-   value = `${name} – ${ruf}`;
-  } else {
-    const inputEl = document.getElementById(type);
-    const input = inputEl.value.trim();
-    if (!input) return;
-    value = input;
-  }
+  <div class="field-container">
+    <h2>Upload Screenshot / Bilder</h2>
+    <input type="file" id="imageInput" accept="image/*">
+    <input type="text" id="imageCaption" placeholder="Bildtitel eingeben">
+    <div id="uploadStatus" style="display:none; font-size: 0.9rem; color: #003366; margin-top: 0.5rem;">
+      ⏳ Bild wird hochgeladen...
+    </div>
+    <button class="btn-primary" onclick="uploadImage()">Bild hochladen</button>
+    <div class="gallery" id="gallery"></div>
+  </div>
+</main>
 
-  db.ref(refPath).push(value).then(() => {
-    if (type === 'koordinaten') {
-      document.getElementById("koord").value = "";
-      document.getElementById("koordInfo").value = "";
-    } else if (type === 'ansprechpartner') {
-      document.getElementById("ansprechName").value = "";
-      document.getElementById("ansprechRuf").value = "";
-    } else {
-      document.getElementById(type).value = "";
-    }
-  });
-}
+<!-- 🔍 Lightbox -->
+<div id="lightbox">
+  <div style="position:relative; max-width:90%; max-height:90%;">
+    <img id="lightboxImage" src="" alt="Bildansicht">
+    <button class="btn-secondary" onclick="closeLightbox()">✖</button>
+  </div>
+</div>
 
-function renderData() {
-  const sections = [
-    { key: 'funkkanal', containerId: 'funkkanalDisplay' },
-    { key: 'ansprechpartner', containerId: 'ansprechpartnerDisplay' },
-    { key: 'hinweis', containerId: 'hinweisDisplay' },
-    { key: 'koordinaten', containerId: 'koordDisplay', isCoord: true }
-  ];
-
-  sections.forEach(({ key, containerId, isCoord }) => {
-    const container = document.getElementById(containerId);
-    db.ref(`einsaetze/${einsatz}/${key}`).on("value", snapshot => {
-      const list = snapshot.val() || {};
-      container.innerHTML = "";
-
-      for (let k in list) {
-        const div = document.createElement("div");
-        div.className = "existing-data";
-
-        if (isCoord) {
-          const ort = list[k].ort;
-          const info = list[k].info;
-          div.innerHTML = `
-            <span style="text-align: left;">
-              <strong>${ort}</strong><br>
-              <span style="font-size: 0.9rem;">${info}</span>
-            </span>
-            <span class='entry-buttons'>
-              <button class="btn-secondary" onclick="copyCoord('${ort}', this)">Kopieren</button>
-              <button class="btn-secondary" onclick="deleteEntry('${key}', '${k}')">Löschen</button>
-            </span>`;
-        } else if (key === 'ansprechpartner') {
-          const [funktion, rufname] = list[k].split(" – ");
-          div.innerHTML = `
-            <span style="text-align: left;">
-              <strong>${funktion}</strong><br>
-              <span style="font-size: 0.9rem;">${rufname}</span>
-            </span>
-            <span class='entry-buttons'>
-              <button class="btn-secondary" onclick="deleteEntry('${key}', '${k}')">Löschen</button>
-            </span>`;
-        } else {
-          div.innerHTML = `
-            <span>${list[k]}</span>
-            <span class='entry-buttons'>
-              <button class="btn-secondary" onclick="deleteEntry('${key}', '${k}')">Löschen</button>
-            </span>`;
-        }
-
-        container.appendChild(div);
-      }
-    });
-  });
-}
-
-  function uploadImage() {
-  const file = document.getElementById('imageInput').files[0];
-  const caption = document.getElementById('imageCaption').value.trim();
-  const status = document.getElementById('uploadStatus');
-
-  if (!file || !caption) {
-    alert('Bitte ein Bild UND Titel angeben.');
-    return;
-  }
-
-  status.style.display = 'block'; // Anzeige einblenden
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const base64Image = e.target.result;
-    const timestamp = Date.now();
-    const time = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-    const entry = {
-      data: base64Image,
-      title: caption,
-      time: time
-    };
-
-    db.ref(`einsaetze/${einsatz}/bilder/${timestamp}`).set(entry)
-      .then(() => {
-        document.getElementById('imageInput').value = "";
-        document.getElementById('imageCaption').value = "";
-        loadGallery();
-        status.style.display = 'none'; // Anzeige ausblenden
-      })
-      .catch(error => {
-        console.error("Fehler beim Speichern:", error);
-        alert('Fehler: ' + error.message);
-        status.style.display = 'none'; // Anzeige ausblenden bei Fehler
-      });
-  };
-
-  reader.onerror = function(err) {
-    console.error("Fehler beim Lesen der Datei:", err);
-    alert("Fehler beim Verarbeiten des Bildes.");
-    status.style.display = 'none'; // Anzeige ausblenden bei Fehler
-  };
-
-  reader.readAsDataURL(file);
-}
-
-    function deleteImage(key) {
-  if (!confirm("Eintrag wirklich löschen?")) return;
-
-  db.ref(`einsaetze/${einsatz}/bilder/${key}`).remove()
-    .then(() => loadGallery());
-}
-
-    function downloadBase64(base64) {
-      const link = document.createElement('a');
-      link.href = base64;
-      link.download = 'einsatzbild.jpg';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    function openLightbox(base64img) {
-      const lightbox = document.getElementById('lightbox');
-      const img = document.getElementById('lightboxImage');
-      img.src = base64img;
-      lightbox.style.display = 'flex';
-    }
-
-    function closeLightbox() {
-      document.getElementById('lightbox').style.display = 'none';
-    }
-
-    function loadGallery() {
-      db.ref(`einsaetze/${einsatz}/bilder`).once('value', snapshot => {
-        const galleryDiv = document.getElementById('gallery');
-        galleryDiv.innerHTML = '';
-        const images = snapshot.val();
-        if (images) {
-          Object.entries(images).forEach(([key, { data, title, time }]) => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'gallery-item';
-
-            const captionDiv = document.createElement('div');
-            captionDiv.className = 'caption';
-            captionDiv.innerHTML = `<strong>${title}</strong><br><small>${time}</small>`;
-
-            const img = document.createElement('img');
-            img.src = data;
-            img.alt = title;
-            img.onclick = () => openLightbox(data);
-
-            const buttons = document.createElement('div');
-            buttons.className = 'image-buttons';
-            buttons.innerHTML = `
-              <button onclick="deleteImage('${key}')">🗑</button>
-              <button onclick="downloadBase64('${data}')">⬇️</button>
-              <button onclick="openLightbox('${data}')">🔍</button>
-            `;
-
-            wrapper.appendChild(captionDiv);
-            wrapper.appendChild(img);
-            wrapper.appendChild(buttons);
-            galleryDiv.appendChild(wrapper);
-          });
-        }
-      });
-    }
-
-    const today = new Date();
-const day = String(today.getDate()).padStart(2, '0');
-const month = String(today.getMonth() + 1).padStart(2, '0');
-const year = today.getFullYear();
-const datum = `${day}.${month}.${year}`;
-
-    renderData();
-    function copyCoord(text, buttonEl) {
-  navigator.clipboard.writeText(text).then(() => {
-    const popup = document.createElement("span");
-    popup.textContent = "✓ Kopiert";
-    popup.style.position = "absolute";
-    popup.style.background = "#003366";
-    popup.style.color = "white";
-    popup.style.fontSize = "0.75rem";
-    popup.style.padding = "2px 6px";
-    popup.style.borderRadius = "6px";
-    popup.style.top = "-1.5rem";
-    popup.style.right = "0";
-    popup.style.zIndex = "10";
-    popup.style.boxShadow = "0 2px 6px rgba(0,0,0,0.2)";
-    popup.style.opacity = "0";
-    popup.style.transition = "opacity 0.3s ease";
-
-    buttonEl.style.position = "relative";
-    buttonEl.style.position = "relative";
-buttonEl.appendChild(popup);
-
-    requestAnimationFrame(() => {
-      popup.style.opacity = "1";
-    });
-
-    setTimeout(() => {
-      popup.style.opacity = "0";
-      setTimeout(() => popup.remove(), 300);
-    }, 1500);
-  });
-}
-    loadGallery();
-    let deleteInfo = null; // 🔄 Wird verwendet, um Typ & Key zwischenzuspeichern
-
-function deleteEntry(type, key) {
-  deleteInfo = { type, key };
-  document.getElementById("deletePasswordInput").value = "";
-  document.getElementById("passwordOverlay").style.display = "flex";
-}
-
-  const passRef = db.ref(`einsaetze/${einsatz}/auth/passwort`);
-  passRef.once("value", snapshot => {
-    const correctPass = snapshot.val();
-    if (enteredPass === correctPass) {
-      const { type, key } = deleteInfo;
-      const refPath = `einsaetze/${einsatz}/${type}/${key}`;
-      db.ref(refPath).remove().then(() => {
-        document.getElementById("passwordOverlay").style.display = "none";
-        deleteInfo = null;
-      });
-    } else {
-      alert("❌ Falsches Passwort.");
-    }
-  });
-}
-   window.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("einsatzIdDisplay").textContent = `${einsatz} (${datum})`;
-  document.getElementById("confirmDeleteBtn").addEventListener("click", confirmDelete);
-  renderData();
-  loadGallery();
-});
-
-  </script>
-  
-<!-- 🔐 Kontextbasiertes Passwort-Overlay -->
-<div id="passwordPrompt" class="password-popup hidden">
-  <div class="popup-box">
+<!-- 🔐 Passwortabfrage-Overlay -->
+<div id="passwordOverlay" class="overlay" style="display:none;">
+  <div class="overlay-content">
     <p>Zum Löschen bitte das Einsatzpasswort eingeben:</p>
-    <input type="password" id="passwordInput" placeholder="Passwort">
-    <div class="popup-actions">
+    <input type="password" id="deletePasswordInput" placeholder="Passwort">
+    <div class="overlay-buttons">
       <button class="btn-secondary" onclick="cancelPassword()">Abbrechen</button>
-      <button class="btn-danger" onclick="confirmPassword()">OK</button>
+      <button class="btn-danger" id="confirmDeleteBtn">OK</button>
     </div>
   </div>
 </div>
 
+</body>
+
+  <!-- 🔧 JavaScript -->
+  <script>
+  // 🔧 Firebase-Konfiguration
+  const firebaseConfig = {
+    apiKey: "AIzaSyC09wlAw-fzzThLjRoS_z_NSFvYB2TP5Bc",
+    authDomain: "einsatzboard.firebaseapp.com",
+    databaseURL: "https://einsatzboard-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "einsatzboard",
+    storageBucket: "einsatzboard.appspot.com",
+    messagingSenderId: "275404072041",
+    appId: "1:275404072041:web:e6123fc9c5632cf2652ef8"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // 📌 Einsatz-Parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const einsatz = urlParams.get("einsatz");
+  if (!einsatz) {
+    document.body.innerHTML = "<p style='padding:2rem;'>Kein gültiger Einsatz ausgewählt oder Parameter fehlt.</p>";
+    throw new Error("Kein Einsatzparameter");
+  }
+
+  // 🧠 Daten speichern
+  function saveData(type) {
+    const refPath = `einsaetze/${einsatz}/${type}`;
+    let value;
+
+    if (type === 'koordinaten') {
+      const ort = document.getElementById("koord").value.trim();
+      const info = document.getElementById("koordInfo").value.trim();
+      if (!ort || !info) return;
+      value = { ort, info };
+    } else if (type === 'ansprechpartner') {
+      const name = document.getElementById("ansprechName").value.trim();
+      const ruf = document.getElementById("ansprechRuf").value.trim();
+      if (!name || !ruf) return;
+      value = `${name} – ${ruf}`;
+    } else {
+      const inputEl = document.getElementById(type);
+      const input = inputEl.value.trim();
+      if (!input) return;
+      value = input;
+    }
+
+    db.ref(refPath).push(value).then(() => {
+      if (type === 'koordinaten') {
+        document.getElementById("koord").value = "";
+        document.getElementById("koordInfo").value = "";
+      } else if (type === 'ansprechpartner') {
+        document.getElementById("ansprechName").value = "";
+        document.getElementById("ansprechRuf").value = "";
+      } else {
+        document.getElementById(type).value = "";
+      }
+    });
+  }
+
+  // 📦 Daten anzeigen
+  function renderData() {
+    const sections = [
+      { key: 'funkkanal', containerId: 'funkkanalDisplay' },
+      { key: 'ansprechpartner', containerId: 'ansprechpartnerDisplay' },
+      { key: 'hinweis', containerId: 'hinweisDisplay' },
+      { key: 'koordinaten', containerId: 'koordDisplay', isCoord: true }
+    ];
+
+    sections.forEach(({ key, containerId, isCoord }) => {
+      const container = document.getElementById(containerId);
+      db.ref(`einsaetze/${einsatz}/${key}`).on("value", snapshot => {
+        const list = snapshot.val() || {};
+        container.innerHTML = "";
+
+        for (let k in list) {
+          const div = document.createElement("div");
+          div.className = "existing-data";
+
+          if (isCoord) {
+            const { ort, info } = list[k];
+            div.innerHTML = `
+              <span style="text-align: left;">
+                <strong>${ort}</strong><br>
+                <span style="font-size: 0.9rem;">${info}</span>
+              </span>
+              <span class='entry-buttons'>
+                <button class="btn-secondary" onclick="copyCoord('${ort}', this)">Kopieren</button>
+                <button class="btn-secondary" onclick="deleteEntry('${key}', '${k}')">Löschen</button>
+              </span>`;
+          } else if (key === 'ansprechpartner') {
+            const [funktion, rufname] = list[k].split(" – ");
+            div.innerHTML = `
+              <span style="text-align: left;">
+                <strong>${funktion}</strong><br>
+                <span style="font-size: 0.9rem;">${rufname}</span>
+              </span>
+              <span class='entry-buttons'>
+                <button class="btn-secondary" onclick="deleteEntry('${key}', '${k}')">Löschen</button>
+              </span>`;
+          } else {
+            div.innerHTML = `
+              <span>${list[k]}</span>
+              <span class='entry-buttons'>
+                <button class="btn-secondary" onclick="deleteEntry('${key}', '${k}')">Löschen</button>
+              </span>`;
+          }
+
+          container.appendChild(div);
+        }
+      });
+    });
+  }
+
+  // 🖼 Bild-Upload
+  function uploadImage() {
+    const file = document.getElementById('imageInput').files[0];
+    const caption = document.getElementById('imageCaption').value.trim();
+    const status = document.getElementById('uploadStatus');
+
+    if (!file || !caption) {
+      alert('Bitte ein Bild UND Titel angeben.');
+      return;
+    }
+
+    status.style.display = 'block';
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const base64Image = e.target.result;
+      const timestamp = Date.now();
+      const time = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      const entry = {
+        data: base64Image,
+        title: caption,
+        time: time
+      };
+
+      db.ref(`einsaetze/${einsatz}/bilder/${timestamp}`).set(entry)
+        .then(() => {
+          document.getElementById('imageInput').value = "";
+          document.getElementById('imageCaption').value = "";
+          loadGallery();
+          status.style.display = 'none';
+        })
+        .catch(error => {
+          console.error("Fehler beim Speichern:", error);
+          alert('Fehler: ' + error.message);
+          status.style.display = 'none';
+        });
+    };
+
+    reader.onerror = function (err) {
+      console.error("Fehler beim Lesen der Datei:", err);
+      alert("Fehler beim Verarbeiten des Bildes.");
+      status.style.display = 'none';
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  function deleteImage(key) {
+    if (!confirm("Eintrag wirklich löschen?")) return;
+    db.ref(`einsaetze/${einsatz}/bilder/${key}`).remove()
+      .then(() => loadGallery());
+  }
+
+  function downloadBase64(base64) {
+    const link = document.createElement('a');
+    link.href = base64;
+    link.download = 'einsatzbild.jpg';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  function openLightbox(base64img) {
+    const lightbox = document.getElementById('lightbox');
+    const img = document.getElementById('lightboxImage');
+    img.src = base64img;
+    lightbox.style.display = 'flex';
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').style.display = 'none';
+  }
+
+  function loadGallery() {
+    db.ref(`einsaetze/${einsatz}/bilder`).once('value', snapshot => {
+      const galleryDiv = document.getElementById('gallery');
+      galleryDiv.innerHTML = '';
+      const images = snapshot.val();
+      if (images) {
+        Object.entries(images).forEach(([key, { data, title, time }]) => {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'gallery-item';
+
+          const captionDiv = document.createElement('div');
+          captionDiv.className = 'caption';
+          captionDiv.innerHTML = `<strong>${title}</strong><br><small>${time}</small>`;
+
+          const img = document.createElement('img');
+          img.src = data;
+          img.alt = title;
+          img.onclick = () => openLightbox(data);
+
+          const buttons = document.createElement('div');
+          buttons.className = 'image-buttons';
+          buttons.innerHTML = `
+            <button onclick="deleteImage('${key}')">🗑</button>
+            <button onclick="downloadBase64('${data}')">⬇️</button>
+            <button onclick="openLightbox('${data}')">🔍</button>
+          `;
+
+          wrapper.appendChild(captionDiv);
+          wrapper.appendChild(img);
+          wrapper.appendChild(buttons);
+          galleryDiv.appendChild(wrapper);
+        });
+      }
+    });
+  }
+
+  function copyCoord(text, buttonEl) {
+    navigator.clipboard.writeText(text).then(() => {
+      const popup = document.createElement("span");
+      popup.textContent = "✓ Kopiert";
+      popup.style.position = "absolute";
+      popup.style.background = "#003366";
+      popup.style.color = "white";
+      popup.style.fontSize = "0.75rem";
+      popup.style.padding = "2px 6px";
+      popup.style.borderRadius = "6px";
+      popup.style.top = "-1.5rem";
+      popup.style.right = "0";
+      popup.style.zIndex = "10";
+      popup.style.boxShadow = "0 2px 6px rgba(0,0,0,0.2)";
+      popup.style.opacity = "0";
+      popup.style.transition = "opacity 0.3s ease";
+
+      buttonEl.style.position = "relative";
+      buttonEl.appendChild(popup);
+
+      requestAnimationFrame(() => {
+        popup.style.opacity = "1";
+      });
+
+      setTimeout(() => {
+        popup.style.opacity = "0";
+        setTimeout(() => popup.remove(), 300);
+      }, 1500);
+    });
+  }
+
+  let deleteInfo = null;
+
+  function deleteEntry(type, key) {
+    deleteInfo = { type, key };
+    document.getElementById("deletePasswordInput").value = "";
+    document.getElementById("passwordOverlay").style.display = "flex";
+  }
+
+  function confirmDelete() {
+    const enteredPass = document.getElementById("deletePasswordInput").value;
+    const passRef = db.ref(`einsaetze/${einsatz}/auth/passwort`);
+    passRef.once("value", snapshot => {
+      const correctPass = snapshot.val();
+      if (enteredPass === correctPass) {
+        const { type, key } = deleteInfo;
+        const refPath = `einsaetze/${einsatz}/${type}/${key}`;
+        db.ref(refPath).remove().then(() => {
+          document.getElementById("passwordOverlay").style.display = "none";
+          deleteInfo = null;
+        });
+      } else {
+        alert("❌ Falsches Passwort.");
+      }
+    });
+  }
+
+  function cancelPassword() {
+    document.getElementById("passwordOverlay").style.display = "none";
+    deleteInfo = null;
+  }
+
+  // 📆 Datum anzeigen
+  const today = new Date();
+  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const year = today.getFullYear();
+  const datum = `${day}.${month}.${year}`;
+
+  // 🔁 Seite initialisieren
+  window.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("einsatzIdDisplay").textContent = `${einsatz} (${datum})`;
+    document.getElementById("confirmDeleteBtn").addEventListener("click", confirmDelete);
+    renderData();
+    loadGallery();
+  });
+</script>
+  
 </body>
 </html>
