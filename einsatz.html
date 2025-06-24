@@ -725,43 +725,52 @@
     loadGallery();
   });
 
-    function loadSummary() {
+ function loadSummary() {
   const contentDiv = document.getElementById("summaryContent");
-  contentDiv.innerHTML = "<em>Lade Daten...</em>";
+  contentDiv.innerHTML = "<em>Daten werden geladen...</em>";
   document.getElementById("summaryOverlay").style.display = "flex";
 
   const paths = {
-    "📡 Funkkanäle": "funkkanal",
-    "🧑‍🚒 Ansprechpartner": "ansprechpartner",
-    "⚠️ Hinweise": "hinweis",
-    "📍 Koordinaten": "koordinaten"
+    "Funkkanäle": "funkkanal",
+    "Ansprechpartner": "ansprechpartner",
+    "Hinweise": "hinweis",
+    "Koordinaten": "koordinaten"
   };
 
   const promises = Object.entries(paths).map(([label, path]) => {
     return db.ref(`einsaetze/${einsatz}/${path}`).once("value").then(snapshot => {
       const val = snapshot.val();
-      if (!val) return `<h4>${label}</h4><p><em>Keine Daten</em></p>`;
+      let sectionHTML = `<section style="margin-bottom: 2rem;">`;
+      sectionHTML += `<h4 style="font-size: 1.1rem; margin-bottom: 0.5rem; border-bottom: 1px solid #ccc; padding-bottom: 0.3rem;">${label}</h4>`;
 
-      let html = `<h4>${label}</h4><ul>`;
-      Object.values(val).forEach(entry => {
-        if (typeof entry === "object") {
-          html += `<li><strong>${entry.ort}</strong><br><span style="font-size:0.9rem;">${entry.info}</span></li>`;
-        } else {
-          html += `<li>${entry}</li>`;
-        }
-      });
-      html += "</ul>";
-      return html;
+      if (!val) {
+        sectionHTML += `<p style="color:#555; font-style:italic;">Keine Angaben</p>`;
+      } else {
+        sectionHTML += `<ul style="padding-left: 1.2rem; margin: 0;">`;
+
+        Object.values(val).forEach(entry => {
+          if (typeof entry === "object") {
+            // Für Koordinaten
+            sectionHTML += `<li style="margin-bottom: 0.6rem;"><strong>${entry.ort}</strong><br><span style="font-size: 0.9rem; color: #333;">${entry.info}</span></li>`;
+          } else if (path === "ansprechpartner") {
+            const [funktion, rufname] = entry.split(" – ");
+            sectionHTML += `<li style="margin-bottom: 0.6rem;"><strong>${funktion}</strong><br><span style="font-size: 0.9rem; color: #333;">${rufname}</span></li>`;
+          } else {
+            sectionHTML += `<li style="margin-bottom: 0.4rem;">${entry}</li>`;
+          }
+        });
+
+        sectionHTML += `</ul>`;
+      }
+
+      sectionHTML += `</section>`;
+      return sectionHTML;
     });
   });
 
   Promise.all(promises).then(results => {
-    contentDiv.innerHTML = results.join("<hr>");
+    contentDiv.innerHTML = results.join("");
   });
-}
-
-function closeSummary() {
-  document.getElementById("summaryOverlay").style.display = "none";
 }
 
 </script>
