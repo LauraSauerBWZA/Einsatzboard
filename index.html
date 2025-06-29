@@ -216,6 +216,41 @@ header {
   font-size: 1.5rem;
   font-weight: bold;
 }
+.btn-danger {
+  background-color: #c10000;
+  color: white;
+  font-size: 1rem;
+  padding: 0.8rem 1.2rem;
+}
+.btn-danger:hover {
+  background-color: #990000;
+}
+    
+.overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.overlay-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.overlay-buttons {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
 
 </style>
 
@@ -228,6 +263,12 @@ header {
   </div>
 </header>
   
+  <div style="text-align: center; margin-top: 1rem;">
+  <button class="btn-danger" onclick="showFullDeletePopup()" style="background-color:#c10000; padding: 0.8rem 1.4rem; font-size: 1rem;">
+    ⚠️ Gesamten Einsatz löschen
+  </button>
+</div>
+
 <main>
   <div class="field-container">
     <h2>Neuen Einsatz erstellen</h2>
@@ -254,11 +295,15 @@ header {
 </main>
 
   <script>
+    
     let currentUrl = "";
+    let einsatz = ""; // Global verfügbar
 
    function createEinsatz() {
   const einsatzName = document.getElementById("einsatzName").value.trim();
   const einsatzPasswort = document.getElementById("einsatzPasswort").value.trim();
+     einsatz = einsatzName; // speichern für später
+
 
   if (!einsatzName || !einsatzPasswort) {
     alert("Bitte Einsatzname UND Passwort angeben.");
@@ -323,7 +368,46 @@ header {
     button.setAttribute("aria-label", "Passwort anzeigen");
   }
 }
+function showFullDeletePopup() {
+  document.getElementById("fullDeletePasswordInput").value = "";
+  document.getElementById("fullDeleteOverlay").style.display = "flex";
+}
+
+function cancelFullDelete() {
+  document.getElementById("fullDeleteOverlay").style.display = "none";
+}
+
+function confirmFullDelete() {
+  const enteredPass = document.getElementById("fullDeletePasswordInput").value;
+  const passRef = db.ref(`einsaetze/${einsatz}/auth/passwort`);
+  passRef.once("value", snapshot => {
+    const correctPass = snapshot.val();
+    if (enteredPass === correctPass) {
+      // 🗑 Gesamten Einsatz löschen
+      db.ref(`einsaetze/${einsatz}`).remove().then(() => {
+        alert("✅ Einsatz wurde gelöscht.");
+        window.location.href = "index.html"; // ggf. anpassen
+      });
+    } else {
+      alert("❌ Falsches Passwort.");
+    }
+  });
+}
 
   </script>
+    <!-- 🔐 Overlay für Einsatz-Gesamtlöschung -->
+<div id="fullDeleteOverlay" class="overlay" style="display:none;">
+  <div class="overlay-content" style="max-width: 380px;">
+    <p style="font-weight: bold; font-size: 1.1rem; color: #c10000;">
+      ⚠️ Gesamten Einsatz unwiderruflich löschen!
+    </p>
+    <p>Bitte Passwort eingeben, um den Einsatz dauerhaft zu entfernen:</p>
+    <input type="password" id="fullDeletePasswordInput" placeholder="Passwort">
+    <div class="overlay-buttons">
+      <button class="btn-secondary" onclick="cancelFullDelete()">Abbrechen</button>
+      <button class="btn-danger" onclick="confirmFullDelete()">Löschen</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
