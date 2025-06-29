@@ -264,9 +264,11 @@ header {
 </header>
   
   <div style="text-align: center; margin-top: 1rem;">
+ <div id="deleteEinsatzWrapper" style="display:none; text-align: center; margin-top: 1rem;">
   <button class="btn-danger" onclick="showFullDeletePopup()" style="background-color:#c10000; padding: 0.8rem 1.4rem; font-size: 1rem;">
     ⚠️ Gesamten Einsatz löschen
   </button>
+</div>
 </div>
 
 <main>
@@ -302,14 +304,17 @@ header {
    function createEinsatz() {
   const einsatzName = document.getElementById("einsatzName").value.trim();
   const einsatzPasswort = document.getElementById("einsatzPasswort").value.trim();
-     einsatz = einsatzName; // speichern für später
-
-
-  if (!einsatzName || !einsatzPasswort) {
+  
+     if (!einsatzName || !einsatzPasswort) {
     alert("Bitte Einsatzname UND Passwort angeben.");
     return;
   }
-
+     
+ einsatz = einsatzName; // speichern für später
+     
+// ✅ Jetzt Button sichtbar machen
+document.getElementById("deleteEinsatzWrapper").style.display = "block";
+     
   const origin = window.location.origin + window.location.pathname.replace("index.html", "");
   const fullUrl = `${origin}einsatz.html?einsatz=${encodeURIComponent(einsatzName)}`;
 
