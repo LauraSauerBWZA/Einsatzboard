@@ -6,342 +6,258 @@
   <title>Einsatz erstellen – Bergwacht</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyC09wlAw-fzzThLjRoS_z_NSFvYB2TP5Bc",
-    authDomain: "einsatzboard.firebaseapp.com",
-    databaseURL: "https://einsatzboard-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "einsatzboard",
-    storageBucket: "einsatzboard.appspot.com",
-    messagingSenderId: "275404072041",
-    appId: "1:275404072041:web:e6123fc9c5632cf2652ef8"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-const db = firebase.database(); // globale Referenz
-
-</script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC09wlAw-fzzThLjRoS_z_NSFvYB2TP5Bc",
+      authDomain: "einsatzboard.firebaseapp.com",
+      databaseURL: "https://einsatzboard-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "einsatzboard",
+      storageBucket: "einsatzboard.appspot.com",
+      messagingSenderId: "275404072041",
+      appId: "1:275404072041:web:e6123fc9c5632cf2652ef8"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+  </script>
   <style>
-  /* 🌄 Modernisiertes Design – Bergwacht Stil */
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    background-color: #f0f4f8;
-    color: #111;
-    margin: 0;
-    padding: 0;
-    text-align: center;
-  }
-
-  header {
-    background-color: #003366;
-    color: white;
-    padding: 1.5rem 1rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-  }
-
-  .logo {
-    height: 44px;
-    vertical-align: middle;
-    margin-right: 12px;
-  }
-
-  main {
-    padding: 2rem 1rem;
-  }
-
-  .field-container {
-    background: white;
-    border-radius: 12px;
-    padding: 2rem 1.5rem;
-    margin: 2rem auto;
-    max-width: 600px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    text-align: center;
-  }
-
-  input[type="text"] {
-    font-size: 1rem;
-    padding: 0.9rem 1rem;
-    width: 100%;
-    max-width: 500px;
-    margin: 0.5rem auto;
-    box-sizing: border-box;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  input[type="text"]:hover {
-    border-color: #999;
-  }
-
-  input[type="text"]:focus {
-    border-color: #003366;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.2);
-  }
-
-  button {
-    font-size: 1rem;
-    font-weight: 500;
-    padding: 0.9rem 1.2rem;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    background-color: #003366;
-    color: white;
-    transition: all 0.2s ease;
-    margin-top: 1rem;
-  }
-
-  button:hover {
-    background-color: #004080;
-  }
-
-  .linkbox {
-    margin-top: 1rem;
-    padding: 1rem;
-    background-color: #e6f0ff;
-    border-left: 5px solid #003366;
-    border-radius: 8px;
-    word-break: break-word;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  }
-
-  #qrcode {
-  margin: 2rem auto 0 auto; /* oben 2rem Abstand, horizontal zentriert */
-  display: flex;
-  justify-content: center;
-}
-
-  @media (max-width: 600px) {
-    input[type="text"], button {
-      font-size: 1rem;
-      padding: 0.9rem;
+    /* 🌄 Modernisiertes Design – Bergwacht Stil */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      background-color: #f0f4f8;
+      color: #111;
+      margin: 0;
+      padding: 0;
+      text-align: center;
     }
-
-    .field-container {
+    header {
+      background-color: #003366;
+      color: white;
       padding: 1.5rem 1rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
     }
-  }
-
-.password-wrapper input[type="password"],
-.password-wrapper input[type="text"] {
-  width: 100%;
-  font-size: 1rem;
-  padding: 0.9rem 2.5rem 0.9rem 1rem;
-  box-sizing: border-box;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: white;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.password-wrapper button {
-  position: absolute;
-  right: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
-  border: none;
-  font-size: 1rem;
-  cursor: pointer;
-  color: #003366;
-  padding: 0;
-  line-height: 1;
-}
-
-.password-wrapper button:hover {
-  color: #004080;
-}
-.password-wrapper {
-  position: relative;
-  display: block;
-  width: 100%;
-  max-width: 500px;
-  margin: 0.5rem auto;
-}
-
-.password-wrapper input[type="password"],
-.password-wrapper input[type="text"] {
-  width: 100%;
-  font-size: 1rem;
-  padding: 0.9rem 6rem 0.9rem 1rem; /* Platz rechts für Button */
-  box-sizing: border-box;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: white;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.password-wrapper .btn-secondary.btn-inline {
-  position: absolute;
-  top: 0.65rem; /* ← das ersetzt top: 50% + translateY(-50%) */
-  right: 0.75rem;
-  padding: 0.4rem 0.75rem;
-  font-size: 0.85rem;
-  line-height: 1.2;
-  background-color: #666 !important;
-  color: white !important;
-  border: none !important;
-  border-radius: 8px !important;
-  cursor: pointer;
-}
-
-.password-wrapper .btn-secondary.btn-inline:hover {
-  background-color: #555 !important;
-}
-header {
-  background-color: #003366;
-  color: white;
-  padding: 1.5rem 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-}
-
-.header-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px; /* Abstand zwischen Logo und Text */
-}
-
-.logo {
-  height: 44px;
-  vertical-align: middle;
-}
-
-.headline {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-.btn-danger {
-  background-color: #c10000;
-  color: white;
-  font-size: 1rem;
-  padding: 0.8rem 1.2rem;
-}
-.btn-danger:hover {
-  background-color: #990000;
-}
-    
-.overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 9999;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.overlay-content {
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-}
-
-.overlay-buttons {
-  margin-top: 1rem;
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-}
-
-</style>
-
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .logo {
+      height: 44px;
+      vertical-align: middle;
+    }
+    .headline {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    main {
+      padding: 2rem 1rem;
+    }
+    .field-container {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem 1.5rem;
+      margin: 2rem auto;
+      max-width: 600px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      text-align: center;
+    }
+    input[type="text"] {
+      font-size: 1rem;
+      padding: 0.9rem 1rem;
+      width: 100%;
+      max-width: 500px;
+      margin: 0.5rem auto;
+      box-sizing: border-box;
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    input[type="text"]:hover { border-color: #999; }
+    input[type="text"]:focus {
+      border-color: #003366;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.2);
+    }
+    button {
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 0.9rem 1.2rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background-color: #003366;
+      color: white;
+      transition: all 0.2s ease;
+      margin-top: 1rem;
+    }
+    button:hover { background-color: #004080; }
+    .linkbox {
+      margin-top: 1rem;
+      padding: 1rem;
+      background-color: #e6f0ff;
+      border-left: 5px solid #003366;
+      border-radius: 8px;
+      word-break: break-word;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+    #qrcode {
+      margin: 2rem auto 0 auto;
+      display: flex;
+      justify-content: center;
+    }
+    .password-wrapper {
+      position: relative;
+      display: block;
+      width: 100%;
+      max-width: 500px;
+      margin: 0.5rem auto;
+    }
+    .password-wrapper input[type="password"],
+    .password-wrapper input[type="text"] {
+      width: 100%;
+      font-size: 1rem;
+      padding: 0.9rem 6rem 0.9rem 1rem;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: white;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .password-wrapper .btn-secondary.btn-inline {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.75rem;
+      padding: 0.4rem 0.75rem;
+      font-size: 0.85rem;
+      line-height: 1.2;
+      background-color: #666 !important;
+      color: white !important;
+      border: none !important;
+      border-radius: 8px !important;
+      cursor: pointer;
+      margin-top: 0;
+    }
+    .password-wrapper .btn-secondary.btn-inline:hover { background-color: #555 !important; }
+    .btn-danger {
+      background-color: #c10000;
+      color: white;
+      font-size: 1rem;
+      padding: 0.8rem 1.2rem;
+    }
+    .btn-danger:hover { background-color: #990000; }
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .overlay-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    .overlay-buttons {
+      margin-top: 1rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+    @media (max-width: 600px) {
+      input[type="text"], button { font-size: 1rem; padding: 0.9rem; }
+      .field-container { padding: 1.5rem 1rem; }
+    }
+  </style>
 </head>
 <body>
   <header>
-  <div class="header-content">
-    <img src="./logo.png" alt="Bergwacht Logo" class="logo">
-    <span class="headline">Einsatz erstellen</span>
-  </div>
-</header>
-  
+    <div class="header-content">
+      <img src="./logo.png" alt="Bergwacht Logo" class="logo">
+      <span class="headline">Einsatz erstellen</span>
+    </div>
+  </header>
+
   <div style="text-align: center; margin-top: 1rem;">
- <div id="deleteEinsatzWrapper" style="display:none; text-align: center; margin-top: 1rem;">
-  <button class="btn-danger" onclick="showFullDeletePopup()" style="background-color:#c10000; padding: 0.8rem 1.4rem; font-size: 1rem;">
-    ⚠️ Gesamten Einsatz löschen
-  </button>
-</div>
-</div>
-
-<main>
-  <div class="field-container">
-    <h2>Neuen Einsatz erstellen</h2>
-    
-<input type="text" id="einsatzName" placeholder="Einsatzname z. B. Zeller Horn">
-<div class="password-wrapper">
-  <input type="password" id="einsatzPasswort" placeholder="Einsatz-Passwort (Pflicht)">
-  <button type="button" id="togglePasswort" class="btn-secondary btn-inline" aria-label="Passwort anzeigen" onclick="togglePassword()">
-    <span class="pw-label">anzeigen</span>
-  </button>
-</div>
-
-<button onclick="createEinsatz()">Einsatz starten</button>
-
-    <div id="output" style="display:none">
-      <div class="linkbox">
-        <a id="einsatzLink" href="#" target="_blank"></a><br>
-        <button onclick="copyLink()">Link kopieren</button>
-        <button onclick="downloadQR()">QR-Code herunterladen</button>
-      </div>
-      <div id="qrcode"></div>
+    <div id="deleteEinsatzWrapper" style="display:none; text-align: center; margin-top: 1rem;">
+      <button class="btn-danger" onclick="showFullDeletePopup()" style="background-color:#c10000; padding: 0.8rem 1.4rem; font-size: 1rem;">
+        ⚠️ Gesamten Einsatz löschen
+      </button>
     </div>
   </div>
-</main>
+
+  <main>
+    <div class="field-container">
+      <h2>Neuen Einsatz erstellen</h2>
+      <input type="text" id="einsatzName" placeholder="Einsatzname z. B. Zeller Horn">
+      <div class="password-wrapper">
+        <input type="password" id="einsatzPasswort" placeholder="Einsatz-Passwort (Pflicht)">
+        <button type="button" id="togglePasswort" class="btn-secondary btn-inline"
+          aria-label="Passwort anzeigen" onclick="togglePassword()">
+          <span class="pw-label">anzeigen</span>
+        </button>
+      </div>
+      <button onclick="createEinsatz()">Einsatz starten</button>
+
+      <div id="output" style="display:none">
+        <div class="linkbox">
+          <a id="einsatzLink" href="#" target="_blank"></a><br>
+          <!-- FIX: copyLink() nutzt jetzt currentUrl korrekt -->
+          <button onclick="copyLink()">Link kopieren</button>
+          <button onclick="downloadQR()">QR-Code herunterladen</button>
+        </div>
+        <div id="qrcode"></div>
+      </div>
+    </div>
+  </main>
 
   <script>
-    
     let currentUrl = "";
-    let einsatz = ""; // Global verfügbar
+    let einsatz = "";
 
-   function createEinsatz() {
-  const einsatzName = document.getElementById("einsatzName").value.trim();
-  const einsatzPasswort = document.getElementById("einsatzPasswort").value.trim();
-  
-     if (!einsatzName || !einsatzPasswort) {
-    alert("Bitte Einsatzname UND Passwort angeben.");
-    return;
-  }
-     
- einsatz = einsatzName; // speichern für später
-     
-// ✅ Jetzt Button sichtbar machen
-document.getElementById("deleteEinsatzWrapper").style.display = "block";
-     
-  const origin = window.location.origin + window.location.pathname.replace("index.html", "");
-  const fullUrl = `${origin}einsatz.html?einsatz=${encodeURIComponent(einsatzName)}`;
+    function createEinsatz() {
+      const einsatzName = document.getElementById("einsatzName").value.trim();
+      const einsatzPasswort = document.getElementById("einsatzPasswort").value.trim();
 
-  // 🔐 Speichere Passwort in Firebase unter diesem Einsatz
-  const db = firebase.database();
-  db.ref(`einsaetze/${einsatzName}/auth`).set({
-    passwort: einsatzPasswort,
-    timestamp: Date.now()
-  });
+      if (!einsatzName || !einsatzPasswort) {
+        alert("Bitte Einsatzname UND Passwort angeben.");
+        return;
+      }
 
-  // 🔗 Zeige Link + QR
-  document.getElementById("einsatzLink").textContent = fullUrl;
-  document.getElementById("einsatzLink").href = fullUrl;
-  document.getElementById("qrcode").innerHTML = "";
+      einsatz = einsatzName;
+      document.getElementById("deleteEinsatzWrapper").style.display = "block";
 
-  const qrContainer = document.getElementById("qrcode");
-  const qrCanvas = document.createElement("div");
-  new QRCode(qrCanvas, fullUrl);
-  qrContainer.appendChild(qrCanvas);
+      const origin = window.location.origin + window.location.pathname.replace("index.html", "");
+      const fullUrl = `${origin}einsatz.html?einsatz=${encodeURIComponent(einsatzName)}`;
 
-  document.getElementById("output").style.display = "block";
+      // ✅ FIX: currentUrl wird jetzt korrekt gesetzt (war vorher immer leer)
+      currentUrl = fullUrl;
 
-  // 🌐 Seite in neuem Tab öffnen
-  window.open(fullUrl, '_blank');
-}
+      // 🔐 Passwort in Firebase speichern
+      db.ref(`einsaetze/${einsatzName}/auth`).set({
+        passwort: einsatzPasswort,
+        timestamp: Date.now()
+      });
+
+      // 🔗 Link + QR anzeigen
+      document.getElementById("einsatzLink").textContent = fullUrl;
+      document.getElementById("einsatzLink").href = fullUrl;
+      document.getElementById("qrcode").innerHTML = "";
+
+      const qrContainer = document.getElementById("qrcode");
+      const qrCanvas = document.createElement("div");
+      new QRCode(qrCanvas, fullUrl);
+      qrContainer.appendChild(qrCanvas);
+
+      document.getElementById("output").style.display = "block";
+      window.open(fullUrl, '_blank');
+    }
 
     function copyLink() {
       navigator.clipboard.writeText(currentUrl).then(() => {
@@ -360,61 +276,61 @@ document.getElementById("deleteEinsatzWrapper").style.display = "block";
         alert("QR-Code nicht gefunden.");
       }
     }
+
     function togglePassword() {
-  const input = document.getElementById("einsatzPasswort");
-  const button = document.getElementById("togglePasswort");
-  const label = button.querySelector(".pw-label");
-
-  if (input.type === "password") {
-    input.type = "text";
-    label.textContent = "verbergen";
-    button.setAttribute("aria-label", "Passwort verbergen");
-  } else {
-    input.type = "password";
-    label.textContent = "anzeigen";
-    button.setAttribute("aria-label", "Passwort anzeigen");
-  }
-}
-function showFullDeletePopup() {
-  document.getElementById("fullDeletePasswordInput").value = "";
-  document.getElementById("fullDeleteOverlay").style.display = "flex";
-}
-
-function cancelFullDelete() {
-  document.getElementById("fullDeleteOverlay").style.display = "none";
-}
-
-function confirmFullDelete() {
-  const enteredPass = document.getElementById("fullDeletePasswordInput").value;
-  const passRef = db.ref(`einsaetze/${einsatz}/auth/passwort`);
-  passRef.once("value", snapshot => {
-    const correctPass = snapshot.val();
-    if (enteredPass === correctPass) {
-      // 🗑 Gesamten Einsatz löschen
-      db.ref(`einsaetze/${einsatz}`).remove().then(() => {
-        alert("✅ Einsatz wurde gelöscht.");
-        window.location.href = "index.html"; // ggf. anpassen
-      });
-    } else {
-      alert("❌ Falsches Passwort.");
+      const input = document.getElementById("einsatzPasswort");
+      const button = document.getElementById("togglePasswort");
+      const label = button.querySelector(".pw-label");
+      if (input.type === "password") {
+        input.type = "text";
+        label.textContent = "verbergen";
+        button.setAttribute("aria-label", "Passwort verbergen");
+      } else {
+        input.type = "password";
+        label.textContent = "anzeigen";
+        button.setAttribute("aria-label", "Passwort anzeigen");
+      }
     }
-  });
-}
 
+    function showFullDeletePopup() {
+      document.getElementById("fullDeletePasswordInput").value = "";
+      document.getElementById("fullDeleteOverlay").style.display = "flex";
+    }
+
+    function cancelFullDelete() {
+      document.getElementById("fullDeleteOverlay").style.display = "none";
+    }
+
+    function confirmFullDelete() {
+      const enteredPass = document.getElementById("fullDeletePasswordInput").value;
+      const passRef = db.ref(`einsaetze/${einsatz}/auth/passwort`);
+      passRef.once("value", snapshot => {
+        const correctPass = snapshot.val();
+        if (enteredPass === correctPass) {
+          db.ref(`einsaetze/${einsatz}`).remove().then(() => {
+            alert("✅ Einsatz wurde gelöscht.");
+            window.location.href = "index.html";
+          });
+        } else {
+          alert("❌ Falsches Passwort.");
+        }
+      });
+    }
   </script>
-    <!-- 🔐 Overlay für Einsatz-Gesamtlöschung -->
-<div id="fullDeleteOverlay" class="overlay" style="display:none;">
-  <div class="overlay-content" style="max-width: 380px;">
-    <p style="font-weight: bold; font-size: 1.1rem; color: #c10000;">
-      ⚠️ Gesamten Einsatz unwiderruflich löschen!
-    </p>
-    <p>Bitte Passwort eingeben, um den Einsatz dauerhaft zu entfernen:</p>
-    <input type="password" id="fullDeletePasswordInput" placeholder="Passwort">
-    <div class="overlay-buttons">
-      <button class="btn-secondary" onclick="cancelFullDelete()">Abbrechen</button>
-      <button class="btn-danger" onclick="confirmFullDelete()">Löschen</button>
+
+  <!-- 🔐 Overlay für Einsatz-Gesamtlöschung -->
+  <div id="fullDeleteOverlay" class="overlay" style="display:none;">
+    <div class="overlay-content" style="max-width: 380px;">
+      <p style="font-weight: bold; font-size: 1.1rem; color: #c10000;">
+        ⚠️ Gesamten Einsatz unwiderruflich löschen!
+      </p>
+      <p>Bitte Passwort eingeben, um den Einsatz dauerhaft zu entfernen:</p>
+      <input type="password" id="fullDeletePasswordInput" placeholder="Passwort">
+      <div class="overlay-buttons">
+        <button class="btn-secondary" onclick="cancelFullDelete()">Abbrechen</button>
+        <button class="btn-danger" onclick="confirmFullDelete()">Löschen</button>
+      </div>
     </div>
   </div>
-</div>
 </body>
 </html>
